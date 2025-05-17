@@ -6,6 +6,7 @@ import com.app.utils.HibernateUtil;
 import org.hibernate.Session;
 
 import java.util.List;
+import org.hibernate.Transaction;
 
 public class UsuarioBasicoDAOimpl implements UsuarioBasicoDAO, AutoCloseable{
     Session session;
@@ -36,6 +37,30 @@ public class UsuarioBasicoDAOimpl implements UsuarioBasicoDAO, AutoCloseable{
                 .getSingleResult();
     }
 
+    
+    @Override
+    public boolean reabrirIncidencia(Incidencia i) {
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+
+            int filasAfectadas = session.createQuery(
+                    "UPDATE Incidencia SET estado = :estado WHERE id = :id")
+                    .setParameter("estado", EstadoIncidencia.EN_ESPERA)
+                    .setParameter("id", i.getId())
+                    .executeUpdate();
+
+            tx.commit();
+            return filasAfectadas > 0;
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     @Override
     public void close() throws Exception {
         session.close();

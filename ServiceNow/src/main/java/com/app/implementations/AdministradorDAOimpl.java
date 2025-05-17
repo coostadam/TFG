@@ -44,11 +44,6 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
     }
 
     @Override
-    public List<Espacio> getEspacios() {
-        return session.createQuery("SELECT e FROM Espacio e", Espacio.class).getResultList();
-    }
-
-    @Override
     public boolean cerrarIncidencia(long id, String solucion, Administrador admin) throws Exception {
         Transaction transaction = null;
         try {
@@ -90,13 +85,6 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
             e.printStackTrace();
             return false;
         }
-    }
-
-    @Override
-    public List<Incidencia> getIncidenciasByDate(Date fecha) {
-        return session.createQuery("SELECT i FROM Incidencia i WHERE i.fechaEntrada = :fecha", Incidencia.class)
-                .setParameter("fecha", fecha)
-                .getResultList();
     }
 
     @Override

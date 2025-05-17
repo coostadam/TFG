@@ -9,8 +9,6 @@ public interface UtilDAO {
 
     Dispositivo addDispositivo(Dispositivo dispositivo);
 
-    Espacio addEspacio(Espacio espacio);
-
     Gestor addGestor(Gestor gestor);
 
     Incidencia addIncidencia(Incidencia incidencia);
@@ -26,8 +24,6 @@ public interface UtilDAO {
     TipoUsuario checkRol(String user);
 
     UsuarioBasico getUsuario(String user);
-
-    boolean reabrirIncidencia(Incidencia i);
 
     Tecnico getTecnico(String user);
     

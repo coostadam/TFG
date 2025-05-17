@@ -33,14 +33,6 @@ public class UtilDAOimpl implements UtilDAO, AutoCloseable {
     }
 
     @Override
-    public Espacio addEspacio(Espacio espacio) {
-        session.beginTransaction();
-        session.persist(espacio);
-        session.getTransaction().commit();
-        return espacio;
-    }
-
-    @Override
     public Gestor addGestor(Gestor gestor) {
         session.beginTransaction();
         session.persist(gestor);
@@ -110,29 +102,6 @@ public class UtilDAOimpl implements UtilDAO, AutoCloseable {
         return session.createQuery("SELECT u FROM Usuario u WHERE u.usuario = :user", UsuarioBasico.class)
                 .setParameter("user", user)
                 .getSingleResult();
-    }
-
-    @Override
-    public boolean reabrirIncidencia(Incidencia i) {
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-
-            int filasAfectadas = session.createQuery(
-                    "UPDATE Incidencia SET estado = :estado WHERE id = :id")
-                    .setParameter("estado", EstadoIncidencia.EN_ESPERA)
-                    .setParameter("id", i.getId())
-                    .executeUpdate();
-
-            tx.commit();
-            return filasAfectadas > 0;
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-            e.printStackTrace();
-            return false;
-        }
     }
 
     @Override

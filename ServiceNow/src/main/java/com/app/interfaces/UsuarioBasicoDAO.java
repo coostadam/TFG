@@ -10,4 +10,6 @@ public interface UsuarioBasicoDAO {
     List<Incidencia> listarMisIncidencias(UsuarioBasico u);
 
     Incidencia getIncidenciaById(long id);
+    
+    boolean reabrirIncidencia(Incidencia i);
 }

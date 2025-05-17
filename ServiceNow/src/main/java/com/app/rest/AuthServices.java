@@ -21,7 +21,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Path("/auth")
-public class AuthService {
+public class AuthServices {
 
     @POST
     @Path("/login")

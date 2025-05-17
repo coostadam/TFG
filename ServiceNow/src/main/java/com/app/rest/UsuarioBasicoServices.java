@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Path("/user")
 public class UsuarioBasicoServices {
+
     @GET
     @Path("/incidencias")
     @Produces(MediaType.APPLICATION_JSON)
@@ -67,7 +68,7 @@ public class UsuarioBasicoServices {
             UsuarioBasico usuario = udi.getUsuario(u.getUsuario());
 
             Dispositivo dispositivo = new Dispositivo(dto.getDispositivoNombre());
-            udi.addDispositivo(dispositivo); 
+            udi.addDispositivo(dispositivo);
 
             TipoIncidencia tipoIncidencia = udi.getTipoIncidenciaByName(dto.getTipo());
 
@@ -96,7 +97,7 @@ public class UsuarioBasicoServices {
             return Response.serverError().build();
         }
     }
-    
+
     @GET
     @Path("/incidencia/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -116,5 +117,33 @@ public class UsuarioBasicoServices {
             e.printStackTrace();
             return Response.serverError().build();
         }
+    }
+
+    @POST
+    @Path("/reabrir/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response reabrirIncidencia(@PathParam("id") Long id, @Context HttpServletRequest request) {
+        UsuarioBasico u = (UsuarioBasico) request.getSession().getAttribute("usuario");
+        if (u == null && request.getSession().getAttribute("tipo") != "USUARIO_BASICO") {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No autenticado")
+                    .build();
+        }
+
+        try (UsuarioBasicoDAOimpl udi = new UsuarioBasicoDAOimpl()) {
+            Incidencia i = udi.getIncidenciaById(id);
+            boolean opened = udi.reabrirIncidencia(i);
+            if (opened) {
+                return Response.ok("Incidencia reabierta").build();
+            }else{
+                return Response.status(Response.Status.NOT_MODIFIED)
+                        .entity("No se pudo reabrir la incidencia")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+
     }
 }
