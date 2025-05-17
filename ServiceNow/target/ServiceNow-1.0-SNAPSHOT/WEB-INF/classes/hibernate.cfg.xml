@@ -17,7 +17,6 @@
         <property name="hibernate.use_sql_comments">true</property>
         <property name="hibernate.hbm2ddl.auto">update</property>
         <mapping class="com.app.pojo.Administrador" />
-        <mapping class="com.app.pojo.Espacio" />
         <mapping class="com.app.pojo.Gestor" />
         <mapping class="com.app.pojo.Incidencia" />
         <mapping class="com.app.pojo.Tecnico" />

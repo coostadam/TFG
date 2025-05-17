@@ -25,7 +25,7 @@ public class TecnicoServices {
     @GET
     @Path("/incidencia/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUserIncidenciasByID(@PathParam("id") Long id, @Context HttpServletRequest request) {
+    public Response getIncidenciaByID(@PathParam("id") Long id, @Context HttpServletRequest request) {
         Tecnico t = (Tecnico) request.getSession().getAttribute("usuario");
 
         if (t == null && request.getSession().getAttribute("tipo") != "TECNICO") {

@@ -14,6 +14,7 @@ com\app\interfaces\TecnicoDAO.class
 com\app\interfaces\GestorDAO.class
 com\app\pojo\TipoIncidencia.class
 com\app\pojo\Prioridad.class
+com\app\dto\UsuarioDTO.class
 com\app\pojo\EstadoIncidencia.class
 com\app\pojo\Usuario.class
 com\app\dto\GestorDTO.class
@@ -27,9 +28,9 @@ com\app\implementations\UtilDAOimpl.class
 com\app\pojo\Tecnico.class
 com\app\dto\IncidenciaCreateDTO.class
 com\app\interfaces\AdministradorDAO.class
-com\app\pojo\Espacio.class
 com\app\dto\SolucionDTO.class
 com\app\rest\AuthService$1.class
+com\app\rest\AdministradorServices.class
 com\app\rest\TecnicoServices.class
 com\app\utils\HibernateUtil.class
 com\app\interfaces\UsuarioBasicoDAO.class

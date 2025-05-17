@@ -32,18 +32,6 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
     }
 
     @Override
-    public List<Dispositivo> getDispositivos() {
-        return session.createQuery("SELECT d FROM Dispositivo d", Dispositivo.class).getResultList();
-    }
-
-    @Override
-    public List<Dispositivo> getDispositivosByTipo(String tipo) {
-        return session.createQuery("SELECT d FROM Dispositivo d WHERE d.tipo = :tipo", Dispositivo.class)
-                .setParameter("tipo", tipo)
-                .getResultList();
-    }
-
-    @Override
     public boolean cerrarIncidencia(long id, String solucion, Administrador admin) throws Exception {
         Transaction transaction = null;
         try {
@@ -88,7 +76,7 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
     }
 
     @Override
-    public List<Incidencia> getIncidenciasByUser(Usuario usuario) {
+    public List<Incidencia> getIncidenciasByUser(UsuarioBasico usuario) {
         return session.createQuery("SELECT i FROM Incidencia i WHERE i.usuario = :usuario", Incidencia.class)
                 .setParameter("usuario", usuario)
                 .getResultList();

@@ -1,6 +1,4 @@
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\dto\GestorDTO.java
-C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Espacio.java
-C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\AuthService.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\UsuarioBasicoServices.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\UsuarioBasico.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\utils\HibernateUtil.java
@@ -13,6 +11,7 @@ C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\TecnicoService
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\GestorServices.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\utils\AddTestDatos.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Prioridad.java
+C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\AuthServices.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\TipoUsuario.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Incidencia.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\interfaces\GestorDAO.java
@@ -23,6 +22,7 @@ C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\dto\SolucionDTO.jav
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\implementations\AdministradorDAOimpl.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Usuario.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\utils\Util.java
+C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\dto\UsuarioDTO.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\TipoIncidencia.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\interfaces\UtilDAO.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\implementations\GestorDAOimpl.java
@@ -31,6 +31,7 @@ C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\interfaces\Administ
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\interfaces\TecnicoDAO.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\EstadoIncidencia.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\RestApp.java
+C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\AdministradorServices.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\dto\UsuarioBasicoDTO.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Gestor.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Tecnico.java
