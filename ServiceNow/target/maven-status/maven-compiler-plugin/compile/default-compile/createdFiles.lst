@@ -7,6 +7,7 @@ com\app\utils\test.class
 com\app\implementations\AdministradorDAOimpl.class
 com\app\pojo\Dispositivo.class
 com\app\pojo\Administrador.class
+com\app\rest\GestorServices.class
 com\app\dto\UsuarioBasicoDTO.class
 com\app\interfaces\UtilDAO.class
 com\app\interfaces\TecnicoDAO.class

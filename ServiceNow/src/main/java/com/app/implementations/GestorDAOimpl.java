@@ -17,18 +17,10 @@ import org.hibernate.Transaction;
 
 public class GestorDAOimpl implements GestorDAO, AutoCloseable {
 
-     Session session;
+    Session session;
 
     public GestorDAOimpl() {
         this.session = HibernateUtil.getSessionFactory().openSession();
-    }
-
-    @Override
-    public Incidencia addIncidencia(Incidencia incidencia) {
-        session.beginTransaction();
-        session.persist(incidencia);
-        session.getTransaction().commit();
-        return incidencia;
     }
 
     @Override
@@ -50,6 +42,13 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
         return session.createQuery("SELECT i FROM Incidencia i WHERE i.tipo = :tipo", Incidencia.class)
                 .setParameter("tipo", tipo)
                 .getResultList();
+    }
+
+    @Override
+    public Incidencia getIncidenciaById(long id) {
+        return session.createQuery("SELECT i FROM Incidencia i WHERE i.id = :id", Incidencia.class)
+                .setParameter("id", id)
+                .getSingleResult();
     }
 
     @Override
@@ -91,9 +90,9 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
     }
 
     @Override
-    public Tecnico asigTecnico(List<Tecnico> tecnicos, Incidencia i) {
+    public boolean asigTecnico(List<Tecnico> tecnicos, Incidencia i) {
         if (tecnicos == null || tecnicos.isEmpty()) {
-            return null;
+            return false;
         }
 
         Transaction transaction = null;
@@ -115,18 +114,18 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
             if (result > 0) {
 
                 transaction.commit();
-                return tecnico;
+                return true;
 
             } else {
                 transaction.rollback();
-                return null;
+                return false;
             }
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
             }
             e.printStackTrace();
-            return null;
+            return false;
         }
     }
 
