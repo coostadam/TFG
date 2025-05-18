@@ -6,7 +6,6 @@ import com.app.utils.Util;
 import org.hibernate.Session;
 import com.app.interfaces.UtilDAO;
 import java.util.List;
-import org.hibernate.Transaction;
 
 public class UtilDAOimpl implements UtilDAO, AutoCloseable {
 
@@ -91,6 +90,17 @@ public class UtilDAOimpl implements UtilDAO, AutoCloseable {
     }
 
     @Override
+    public Usuario getUsuario(String user) {
+        try {
+            return session.createQuery("SELECT u FROM Usuario u WHERE u.usuario = :user", Usuario.class)
+                    .setParameter("user", user)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
     public Tecnico getTecnico(String user) {
         return session.createQuery("SELECT u FROM Usuario u WHERE u.usuario = :user", Tecnico.class)
                 .setParameter("user", user)
@@ -98,7 +108,7 @@ public class UtilDAOimpl implements UtilDAO, AutoCloseable {
     }
 
     @Override
-    public UsuarioBasico getUsuario(String user) {
+    public UsuarioBasico getUsuarioBasico(String user) {
         return session.createQuery("SELECT u FROM Usuario u WHERE u.usuario = :user", UsuarioBasico.class)
                 .setParameter("user", user)
                 .getSingleResult();

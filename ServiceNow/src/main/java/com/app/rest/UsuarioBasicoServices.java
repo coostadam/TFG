@@ -65,7 +65,7 @@ public class UsuarioBasicoServices {
         }
 
         try (UtilDAOimpl udi = new UtilDAOimpl()) {
-            UsuarioBasico usuario = udi.getUsuario(u.getUsuario());
+            UsuarioBasico usuario = udi.getUsuarioBasico(u.getUsuario());
 
             Dispositivo dispositivo = new Dispositivo(dto.getDispositivoNombre());
             udi.addDispositivo(dispositivo);

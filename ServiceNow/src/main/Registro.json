@@ -1,0 +1,9 @@
+{
+  "usuario": "juan123",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "correo": "juan.perez@example.com",
+  "tlfno": "612345678",
+  "password": "miContrasenaSegura"
+}
+

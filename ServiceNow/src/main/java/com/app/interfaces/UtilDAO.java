@@ -22,8 +22,10 @@ public interface UtilDAO {
     boolean checkLog(String user, String pass);
 
     TipoUsuario checkRol(String user);
+    
+    Usuario getUsuario(String user);
 
-    UsuarioBasico getUsuario(String user);
+    UsuarioBasico getUsuarioBasico(String user);
 
     Tecnico getTecnico(String user);
     

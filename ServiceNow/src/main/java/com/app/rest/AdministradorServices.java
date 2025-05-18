@@ -1,6 +1,7 @@
 package com.app.rest;
 
 import com.app.dto.IncidenciaDTO;
+import com.app.dto.RolDTO;
 import com.app.dto.SolucionDTO;
 import com.app.dto.UsuarioDTO;
 import com.app.implementations.AdministradorDAOimpl;
@@ -108,14 +109,14 @@ public class AdministradorServices {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUserIncidencia(@PathParam("usuario") String usuario, @Context HttpServletRequest request) {
         Administrador a = (Administrador) request.getSession().getAttribute("usuario");
-        if (a == null ) {
+        if (a == null) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("No autenticado")
                     .build();
         }
 
         try (AdministradorDAOimpl adi = new AdministradorDAOimpl(); UtilDAOimpl udi = new UtilDAOimpl()) {
-            UsuarioBasico u = udi.getUsuario(usuario);
+            UsuarioBasico u = udi.getUsuarioBasico(usuario);
             if (u == null) {
                 return Response.status(Response.Status.NOT_FOUND).entity("No encontrado").build();
             }
@@ -213,7 +214,7 @@ public class AdministradorServices {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllIncidencias(@Context HttpServletRequest request) {
         Administrador a = (Administrador) request.getSession().getAttribute("usuario");
-        if (a == null ) {
+        if (a == null) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("No autenticado")
                     .build();
@@ -276,6 +277,41 @@ public class AdministradorServices {
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("No se pudo cerrar la incidencia")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
+
+    @POST
+    @Path("/changeRol/{username}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response changeRol(@PathParam("username") String user, RolDTO rolDto, @Context HttpServletRequest request) {
+        Administrador a = (Administrador) request.getSession().getAttribute("usuario");
+        if (a == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No autenticado")
+                    .build();
+        }
+
+        try (AdministradorDAOimpl adi = new AdministradorDAOimpl(); UtilDAOimpl udi = new UtilDAOimpl()) {
+            Usuario targetUser = udi.getUsuario(user);
+            if (targetUser == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Usuario no encontrado")
+                        .build();
+            }
+
+            boolean res = adi.changeRolUser(targetUser, rolDto.getRol());
+            
+            if (res) {
+                return Response.ok().build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("No se pudo cambiar el rol")
                         .build();
             }
         } catch (Exception e) {

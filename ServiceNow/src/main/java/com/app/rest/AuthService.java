@@ -1,12 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.app.rest;
 
 import com.app.implementations.UtilDAOimpl;
 import com.app.pojo.TipoUsuario;
 import com.app.pojo.Usuario;
+import com.app.pojo.UsuarioBasico;
+import com.app.utils.Util;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Consumes;
@@ -35,7 +33,7 @@ public class AuthService {
             Usuario user = null;
             switch (tipo) {
                 case USUARIO_BASICO:
-                    user = udi.getUsuario(loginRequest.username);
+                    user = udi.getUsuarioBasico(loginRequest.username);
                     break;
                 case TECNICO:
                     user = udi.getTecnico(loginRequest.username);
@@ -63,9 +61,61 @@ public class AuthService {
         }
     }
 
+    @POST
+    @Path("/registro")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response registro(RegistroRequest data) {
+        try (UtilDAOimpl udi = new UtilDAOimpl()) {
+            if (udi.getUsuario(data.usuario) != null) {
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("El usuario ya existe")
+                        .build();
+            }
+
+            UsuarioBasico nuevo = new UsuarioBasico();
+            nuevo.setUsuario(data.usuario);
+            nuevo.setNombre(data.nombre);
+            nuevo.setApellido(data.apellido);
+            nuevo.setCorreo(data.correo);
+            nuevo.setTlfno(data.tlfno);
+            nuevo.setPassword(Util.hashPassword(data.password));
+            nuevo.setTipoUsuario(TipoUsuario.USUARIO_BASICO);
+
+            udi.addUsuarioBasico(nuevo);
+
+            return Response.status(Response.Status.CREATED).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
+
     public static class LoginRequest {
 
         public String username;
         public String password;
     }
+
+    public static class RegistroRequest {
+
+        public String usuario;
+        public String nombre;
+        public String apellido;
+        public String correo;
+        public String tlfno;
+        public String password;
+
+        public RegistroRequest() {
+        }
+
+        public RegistroRequest(String usuario, String nombre, String apellido, String correo, String tlfno, String password) {
+            this.usuario = usuario;
+            this.nombre = nombre;
+            this.apellido = apellido;
+            this.correo = correo;
+            this.tlfno = tlfno;
+            this.password = password;
+        }
+    }
+
 }

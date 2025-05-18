@@ -23,10 +23,12 @@ com\app\rest\AuthService.class
 com\app\utils\Util.class
 com\app\implementations\GestorDAOimpl.class
 com\app\implementations\UsuarioBasicoDAOimpl.class
+com\app\dto\RolDTO.class
 com\app\pojo\TipoUsuario.class
 com\app\implementations\UtilDAOimpl.class
 com\app\pojo\Tecnico.class
 com\app\dto\IncidenciaCreateDTO.class
+com\app\rest\AuthService$RegistroRequest.class
 com\app\interfaces\AdministradorDAO.class
 com\app\dto\SolucionDTO.class
 com\app\rest\AuthService$1.class
