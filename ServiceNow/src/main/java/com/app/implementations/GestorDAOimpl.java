@@ -26,7 +26,7 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
     @Override
     public List<Incidencia> getIncidenciasIfEspera() {
         return session.createQuery("SELECT i FROM Incidencia i WHERE i.estado = :estado", Incidencia.class)
-                .setParameter("estado", EstadoIncidencia.EN_ESPERA)
+                .setParameter("estado", EstadoIncidencia.ALTA)
                 .getResultList();
     }
 

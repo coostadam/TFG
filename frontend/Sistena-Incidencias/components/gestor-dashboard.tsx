@@ -31,19 +31,33 @@ export function GestorDashboard() {
   const [currentIncidencia, setCurrentIncidencia] = useState(null)
 
   useEffect(() => {
-    // Inicializar datos
-    setIncidencias(mockIncidencias)
+     const fetchIncidencias = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/gestor/incidencia", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener incidencias");
+        }
+
+        const data = await response.json();
+
+        console.log("Incidencias recibidas:", data)
+
+        setIncidencias(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchIncidencias();
   }, [])
 
   useEffect(() => {
     // Filtrar incidencias según la pestaña activa y la búsqueda
     let filtered = [...incidencias]
-
-    if (activeTab === "asignadas") {
-      filtered = filtered.filter((inc) => inc.gestor === "gestor@example.com")
-    } else if (activeTab === "propias") {
-      filtered = filtered.filter((inc) => inc.creador === "gestor@example.com")
-    }
 
     // Aplicar filtros de estado y prioridad
     if (filters.estado) {
@@ -121,23 +135,29 @@ export function GestorDashboard() {
   }
 
   const getEstadoBadge = (estado) => {
-    switch (estado) {
-      case "Abierta":
+   switch (estado) {
+      case "ALTA":
         return (
           <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">
             <AlertCircle className="mr-1 h-3 w-3" /> {estado}
           </Badge>
         )
-      case "En proceso":
+      case "EN_ESPERA":
         return (
           <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
-            <RefreshCw className="mr-1 h-3 w-3" /> {estado}
+            <RefreshCw className="mr-1 h-3 w-3" /> EN ESPERA
           </Badge>
         )
-      case "Cerrada":
+      case "CERRADA_EXITO":
         return (
           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-            <CheckCircle className="mr-1 h-3 w-3" /> {estado}
+            <CheckCircle className="mr-1 h-3 w-3" /> CERRADA EXITO
+          </Badge>
+        )
+      case "ASIGNADA":
+        return (
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
+            <UserCheck className="mr-1 h-3 w-3" /> {estado}
           </Badge>
         )
       default:
@@ -147,19 +167,21 @@ export function GestorDashboard() {
 
   const getPrioridadBadge = (prioridad) => {
     switch (prioridad) {
-      case "Alta":
-        return <Badge className="bg-red-500">{prioridad}</Badge>
-      case "Media":
+      case "MUY_ALTA":
+        return <Badge className="bg-red-500">MUY ALTA</Badge>
+      case "ALTA":
+        return <Badge className="bg-orange-500">{prioridad}</Badge>
+      case "MEDIA":
         return <Badge className="bg-yellow-500">{prioridad}</Badge>
-      case "Baja":
+      case "BAJA":
         return <Badge className="bg-green-500">{prioridad}</Badge>
       default:
         return <Badge>{prioridad}</Badge>
     }
   }
 
-  const incidenciasGestionadas = incidencias.filter((inc) => inc.gestor === "gestor@example.com")
-  const incidenciasPendientes = incidenciasGestionadas.filter((inc) => inc.estado !== "Cerrada")
+  const incidenciasGestionadas = incidencias
+  const incidenciasPendientes = incidenciasGestionadas.filter((inc) => inc.estado !== "CERRADA_EXITO")
 
   return (
     <div className="space-y-6">
@@ -187,7 +209,7 @@ export function GestorDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidenciasGestionadas.length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidenciasGestionadas.filter((inc) => inc.estado === "Cerrada").length} resueltas
+              {incidenciasGestionadas.filter((inc) => inc.estado === "CERRADA_EXITO").length} resueltas
             </p>
           </CardContent>
         </Card>
@@ -199,7 +221,7 @@ export function GestorDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidenciasPendientes.length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidenciasPendientes.filter((inc) => inc.prioridad === "Alta").length} de alta prioridad
+              {incidenciasPendientes.filter((inc) => inc.prioridad === "ALTA").length} de alta prioridad
             </p>
           </CardContent>
         </Card>
@@ -249,9 +271,9 @@ export function GestorDashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="Abierta">Abierta</SelectItem>
-                        <SelectItem value="En proceso">En proceso</SelectItem>
-                        <SelectItem value="Cerrada">Cerrada</SelectItem>
+                        <SelectItem value="ASIGNADA">Asignada</SelectItem>
+                        <SelectItem value="EN_ESPERA">En espera</SelectItem>
+                        <SelectItem value="CERRADA_EXITO">Cerrada</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -266,9 +288,10 @@ export function GestorDashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todas</SelectItem>
-                        <SelectItem value="Alta">Alta</SelectItem>
-                        <SelectItem value="Media">Media</SelectItem>
-                        <SelectItem value="Baja">Baja</SelectItem>
+                        <SelectItem value="MUY_ALTA">Muy alta</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
+                        <SelectItem value="MEDIA">Media</SelectItem>
+                        <SelectItem value="BAJA">Baja</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -321,11 +344,11 @@ export function GestorDashboard() {
                     filteredIncidencias.map((incidencia) => (
                       <TableRow key={incidencia.id}>
                         <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                        <TableCell>{incidencia.titulo}</TableCell>
+                        <TableCell>{incidencia.descripcion}</TableCell>
                         <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                         <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico || "Sin asignar"}</TableCell>
-                        <TableCell>{incidencia.fechaCreacion}</TableCell>
+                        <TableCell>{incidencia.tecnico?.username || "Sin asignar"}</TableCell>
+                        <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
                           <Button variant="ghost" size="icon" onClick={() => handleEditIncidencia(incidencia)}>
                             <Edit className="h-4 w-4" />

@@ -1,17 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.app.utils;
 
 import com.app.implementations.*;
 import com.app.pojo.*;
 import java.util.Date;
 
-/**
- *
- * @author User
- */
 public class AddTestDatos {
 
     public static void addDatos() {

@@ -33,7 +33,7 @@ export function TecnicoDashboard() {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/tecnico/incidencias/misIncidencias", {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/tecnico/incidencias/misIncidencias", {
           method: "GET",
           credentials: "include",
         });
@@ -43,8 +43,6 @@ export function TecnicoDashboard() {
         }
 
         const data = await response.json();
-
-        console.log("Incidencias recibidas:", data)
 
         setIncidencias(data);
       } catch (error) {
@@ -59,13 +57,6 @@ export function TecnicoDashboard() {
     // Filtrar incidencias según la pestaña activa y la búsqueda
     let filtered = [...incidencias]
 
-    // if (activeTab === "asignadas") {
-    // filtered = filtered.filter((inc) => inc.tecnico === "tecnico@example.com")
-    //} else if (activeTab === "propias") {
-    // filtered = filtered.filter((inc) => inc.creador === "tecnico@example.com")
-    //}
-
-    // Aplicar filtros de estado y prioridad
     if (filters.estado) {
       filtered = filtered.filter((inc) => inc.estado === filters.estado)
     }
@@ -111,21 +102,9 @@ export function TecnicoDashboard() {
     setResolverIncidenciaOpen(true)
   }
 
-  const handleSaveIncidencia = (incidenciaData) => {
-    // Crear nueva incidencia
-    const newIncidencia = {
-      id: Math.max(...incidencias.map((inc) => inc.id)) + 1,
-      creador: "tecnico@example.com",
-      fechaCreacion: new Date().toISOString().split("T")[0],
-      ...incidenciaData,
-    }
-    setIncidencias([...incidencias, newIncidencia])
-    setCrearIncidenciaOpen(false)
-  }
-
   const handleResolverGuardar = async (resolucion) => {
   try {
-    const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
+    const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -147,7 +126,6 @@ export function TecnicoDashboard() {
     alert("Error de red al cerrar la incidencia");
   }
 };
-
 
   const resetFilters = () => {
     setFilters({
@@ -458,15 +436,6 @@ export function TecnicoDashboard() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Diálogos */}
-      <CrearIncidenciaDialog
-        open={crearIncidenciaOpen}
-        onOpenChange={setCrearIncidenciaOpen}
-        onSave={handleSaveIncidencia}
-        tecnicos={[]}
-        isTecnico={true}
-      />
 
       <ResolverIncidenciaDialog
         open={resolverIncidenciaOpen}

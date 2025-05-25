@@ -20,7 +20,7 @@ export default function DashboardPage() {
       router.push("/login")
       return
     }
-    console.log("Rol: ", role)
+
     setUserRole(role)
     setLoading(false)
   }, [router])

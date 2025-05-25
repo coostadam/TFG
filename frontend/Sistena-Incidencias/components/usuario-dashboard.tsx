@@ -28,7 +28,7 @@ export function UsuarioDashboard() {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/user/incidencias", {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/user/incidencias", {
           method: "GET",
           credentials: "include",
         });
@@ -96,7 +96,7 @@ export function UsuarioDashboard() {
 
   const handleSaveIncidencia = async (incidenciaData) => {
     try {
-      const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/user/add", {
+      const response = await fetch("http://localhost:8080/ServiceNow/resources/user/add", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -176,10 +176,9 @@ export function UsuarioDashboard() {
   }
 
   useEffect(() => {
-
     const fecthTipos = async () => {
       try {
-        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/user/tipos", {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/user/tipos", {
           method: "GET",
           credentials: "include",
         });
@@ -197,7 +196,6 @@ export function UsuarioDashboard() {
     }
 
     fecthTipos();
-
   });
 
 

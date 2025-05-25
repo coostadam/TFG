@@ -23,7 +23,7 @@ public class AuthService {
     @POST
 @Path("/log")
 @Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)   // Añade para indicar que devuelve JSON
+@Produces(MediaType.APPLICATION_JSON)   
 public Response login(LoginRequest loginRequest, @Context HttpServletRequest request) throws Exception {
     boolean esValido;
     try (UtilDAOimpl udi = new UtilDAOimpl()) {

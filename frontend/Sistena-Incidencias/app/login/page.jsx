@@ -90,7 +90,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch("http://192.168.1.147:8080/ServiceNow/resources/auth/log", {
+      const res = await fetch("http://localhost:8080/ServiceNow/resources/auth/log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -114,6 +114,7 @@ export default function LoginPage() {
           setError("Respuesta inesperada del servidor");
           return;
         }
+
         localStorage.setItem("userRole", data.rol.toLowerCase());
         localStorage.setItem("userEmail", data.usuario);
         localStorage.setItem("userName", data.nombre);
@@ -129,9 +130,6 @@ export default function LoginPage() {
     }
   };
 
-
-
-
   const handleRegistro = async (e) => {
     e.preventDefault()
     setRegistroError("")
@@ -142,7 +140,7 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/auth/registro", {
+      const response = await fetch("http://localhost:8080/ServiceNow/resources/auth/registro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

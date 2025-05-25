@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 public class GestorServices {
 
     @GET
-    @Path("/incidencia/espera")
+    @Path("/incidencia")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getIncidenciaIfEspera(@Context HttpServletRequest request) {
         Gestor g = (Gestor) request.getSession().getAttribute("usuario");
-        if (g == null && request.getSession().getAttribute("tipo") != "GESTOR") {
+        if (g == null) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("No autenticado")
                     .build();
