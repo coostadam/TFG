@@ -14,6 +14,8 @@ export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loginError, setLoginError] = useState("")
+  const [error, setError] = useState("")
+
 
   // Estados para el formulario de registro
   const [nombre, setNombre] = useState("")
@@ -83,80 +85,89 @@ export default function LoginPage() {
     }
   }, [])
 
-  const handleLogin = (e) => {
-    e.preventDefault()
-    setLoginError("")
+  const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    // Obtener usuarios del localStorage
-    const usuariosGuardados = JSON.parse(localStorage.getItem("usuarios") || "[]")
+  try {
+    const res = await fetch("http://localhost:8080/ServiceNow/resources/auth/log", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: "include",
+    });
 
-    // Buscar usuario por email
-    const usuarioEncontrado = usuariosGuardados.find((user) => user.email === email)
+    const text = await res.text(); 
 
-    if (usuarioEncontrado && usuarioEncontrado.password === password) {
-      // Guardar información del usuario en localStorage para simular una sesión
-      localStorage.setItem("userRole", usuarioEncontrado.tipo)
-      localStorage.setItem("userEmail", usuarioEncontrado.email)
-      localStorage.setItem("userName", `${usuarioEncontrado.nombre} ${usuarioEncontrado.apellidos}`)
-
-      // Redirigir al dashboard
-      router.push("/dashboard")
-    } else {
-      setLoginError("Credenciales incorrectas")
+    let data;
+    try {
+      data = JSON.parse(text); 
+    } catch {
+      data = null; 
     }
+
+    if (res.ok) {
+
+      if (!data) {
+        setError("Respuesta inesperada del servidor");
+        return;
+      }
+      localStorage.setItem("userRole", data.rol.toLowerCase());
+      localStorage.setItem("userEmail", data.usuario);
+      localStorage.setItem("userName", data.nombre);
+      
+      router.push("/dashboard");
+
+    } else {
+      setError(data?.mensaje || text || "Error desconocido");
+    }
+  } catch (e) {
+    setError("Error de conexión con el servidor");
+    console.error(e);
+  }
+};
+
+
+
+  const handleRegistro = async (e) => {
+  e.preventDefault()
+  setRegistroError("")
+
+  if (passwordRegistro !== confirmPassword) {
+    setRegistroError("Las contraseñas no coinciden")
+    return
   }
 
-  const handleRegistro = (e) => {
-    e.preventDefault()
-    setRegistroError("")
+  try {
+    const response = await fetch("http://localhost:8080/ServiceNow/resources/auth/registro", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        usuario,
+        nombre,
+        apellido: apellidos,
+        correo: emailRegistro,
+        tlfno: telefono,
+        password: passwordRegistro,
+      }),
+    })
 
-    // Validaciones básicas
-    if (passwordRegistro !== confirmPassword) {
-      setRegistroError("Las contraseñas no coinciden")
+    if (response.status === 409) {
+      setRegistroError("El nombre de usuario ya está en uso")
       return
     }
 
-    if (passwordRegistro.length < 6) {
-      setRegistroError("La contraseña debe tener al menos 6 caracteres")
+    if (!response.ok) {
+      setRegistroError("Error al registrar usuario")
       return
     }
 
-    // Obtener usuarios existentes
-    const usuariosGuardados = JSON.parse(localStorage.getItem("usuarios") || "[]")
-
-    // Verificar si el email ya está registrado
-    if (usuariosGuardados.some((user) => user.email === emailRegistro)) {
-      setRegistroError("Este correo electrónico ya está registrado")
-      return
-    }
-
-    // Verificar si el nombre de usuario ya está registrado
-    if (usuariosGuardados.some((user) => user.usuario === usuario)) {
-      setRegistroError("Este nombre de usuario ya está en uso")
-      return
-    }
-
-    // Crear nuevo usuario (siempre con rol "usuario" por defecto)
-    const nuevoUsuario = {
-      id: usuariosGuardados.length > 0 ? Math.max(...usuariosGuardados.map((u) => u.id)) + 1 : 1,
-      nombre,
-      apellidos,
-      email: emailRegistro,
-      password: passwordRegistro,
-      telefono,
-      usuario,
-      direccion,
-      tipo: "usuario", // Rol por defecto para nuevos registros
-    }
-
-    // Guardar el nuevo usuario
-    const nuevosUsuarios = [...usuariosGuardados, nuevoUsuario]
-    localStorage.setItem("usuarios", JSON.stringify(nuevosUsuarios))
-
-    // Mostrar mensaje de éxito
-    alert(`Registro exitoso para ${nombre} ${apellidos}. Ya puedes iniciar sesión.`)
-
-    // Limpiar el formulario
+    alert("Registro exitoso. Ya puedes iniciar sesión.")
+    // Limpiar campos...
     setNombre("")
     setApellidos("")
     setTelefono("")
@@ -165,11 +176,12 @@ export default function LoginPage() {
     setEmailRegistro("")
     setPasswordRegistro("")
     setConfirmPassword("")
-
-    // Cambiar a la pestaña de login
     document.querySelector('[data-state="inactive"][value="login"]')?.click()
+  } catch (err) {
+    console.error(err)
+    setRegistroError("No se pudo conectar al servidor.")
   }
-
+}
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 p-4">
       <Card className="w-full max-w-md shadow-xl border-0">
@@ -197,7 +209,6 @@ export default function LoginPage() {
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
                     <Input
                       id="email"
-                      type="email"
                       placeholder="correo@ejemplo.com"
                       className="pl-10"
                       value={email}

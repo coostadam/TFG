@@ -20,7 +20,7 @@ export default function DashboardPage() {
       router.push("/login")
       return
     }
-
+    console.log("Rol: ", role)
     setUserRole(role)
     setLoading(false)
   }, [router])
@@ -38,7 +38,7 @@ export default function DashboardPage() {
       {userRole === "admin" && <AdminDashboard />}
       {userRole === "tecnico" && <TecnicoDashboard />}
       {userRole === "gestor" && <GestorDashboard />}
-      {userRole === "usuario" && <UsuarioDashboard />}
+      {userRole === "usuario_basico" && <UsuarioDashboard />}
     </DashboardLayout>
   )
 }

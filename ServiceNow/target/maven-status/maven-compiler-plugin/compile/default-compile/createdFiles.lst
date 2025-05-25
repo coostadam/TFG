@@ -20,6 +20,7 @@ com\app\pojo\Usuario.class
 com\app\dto\GestorDTO.class
 com\app\pojo\Incidencia.class
 com\app\rest\AuthService.class
+com\app\rest\CORSFilter.class
 com\app\utils\Util.class
 com\app\implementations\GestorDAOimpl.class
 com\app\implementations\UsuarioBasicoDAOimpl.class

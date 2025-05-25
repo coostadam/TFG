@@ -2,6 +2,7 @@ package com.app.dto;
 
 import com.app.pojo.EstadoIncidencia;
 import com.app.pojo.Incidencia;
+import com.app.pojo.Prioridad;
 import java.sql.Date;
 
 public class IncidenciaDTO {
@@ -9,6 +10,7 @@ public class IncidenciaDTO {
     private Long id;
     private String descripcion;
     private EstadoIncidencia estado;
+    private Prioridad prioridad;
     private Date fechaCreacion;
     private Date fechaApertura;
     private Date fechaCierre;
@@ -22,6 +24,7 @@ public class IncidenciaDTO {
         this.id = incidencia.getId();
         this.descripcion = incidencia.getDescripcion();
         this.estado = incidencia.getEstado();
+        this.prioridad = incidencia.getPrioridad();
         this.fechaCreacion = incidencia.getFechaApertura();
 
         if (incidencia.getUsuario() != null) {
@@ -129,4 +132,11 @@ public class IncidenciaDTO {
         this.fechaCierre = fechaCierre;
     }
 
+    public Prioridad getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(Prioridad prioridad) {
+        this.prioridad = prioridad;
+    }
 }

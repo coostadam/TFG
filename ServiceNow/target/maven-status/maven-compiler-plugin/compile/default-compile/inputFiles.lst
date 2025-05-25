@@ -1,4 +1,5 @@
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\dto\GestorDTO.java
+C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\AuthService.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\UsuarioBasicoServices.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\UsuarioBasico.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\utils\HibernateUtil.java
@@ -11,9 +12,9 @@ C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\TecnicoService
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\GestorServices.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\utils\AddTestDatos.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Prioridad.java
-C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\rest\AuthServices.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\TipoUsuario.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Incidencia.java
+C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\dto\RolDTO.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\interfaces\GestorDAO.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\pojo\Dispositivo.java
 C:\Users\User\Documents\TFG\ServiceNow\src\main\java\com\app\implementations\UsuarioBasicoDAOimpl.java

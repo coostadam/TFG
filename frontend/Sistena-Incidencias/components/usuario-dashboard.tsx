@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AlertCircle, CheckCircle, ClipboardList, Filter, Plus, RefreshCw, Search } from "lucide-react"
+import { AlertCircle, CheckCircle, ClipboardList, Filter, Plus, RefreshCw, Search, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,7 +10,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CrearIncidenciaDialog } from "@/components/crear-incidencia-dialog"
-import { mockIncidencias } from "@/lib/mock-data"
 
 export function UsuarioDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -26,9 +25,28 @@ export function UsuarioDashboard() {
   const [crearIncidenciaOpen, setCrearIncidenciaOpen] = useState(false)
 
   useEffect(() => {
-    // Inicializar datos - filtrar solo las incidencias del usuario actual
-    setIncidencias(mockIncidencias.filter((inc) => inc.creador === "usuario@example.com"))
-  }, [])
+  const fetchIncidencias = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/ServiceNow/resources/user/incidencias", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al obtener incidencias");
+      }
+
+      const data = await response.json();
+
+      setIncidencias(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchIncidencias();
+}, []);
+
 
   useEffect(() => {
     // Filtrar incidencias según la búsqueda y filtros
@@ -75,17 +93,31 @@ export function UsuarioDashboard() {
     setSortConfig({ key, direction })
   }
 
-  const handleSaveIncidencia = (incidenciaData) => {
-    // Crear nueva incidencia
-    const newIncidencia = {
-      id: Math.max(...mockIncidencias.map((inc) => inc.id)) + 1,
-      creador: "usuario@example.com",
-      fechaCreacion: new Date().toISOString().split("T")[0],
-      ...incidenciaData,
+  const handleSaveIncidencia = async (incidenciaData) => {
+  try {
+    const response = await fetch("/user/add", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(incidenciaData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al crear la incidencia");
     }
-    setIncidencias([...incidencias, newIncidencia])
-    setCrearIncidenciaOpen(false)
+
+    const nuevaIncidencia = await response.json();
+
+    // Actualizar la lista sin necesidad de recargar desde cero
+    setIncidencias((prev) => [...prev, nuevaIncidencia]);
+    setCrearIncidenciaOpen(false);
+  } catch (error) {
+    console.error("Error creando incidencia:", error);
   }
+};
+
 
   const resetFilters = () => {
     setFilters({
@@ -98,24 +130,30 @@ export function UsuarioDashboard() {
 
   const getEstadoBadge = (estado) => {
     switch (estado) {
-      case "Abierta":
+      case "ALTA":
         return (
           <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">
             <AlertCircle className="mr-1 h-3 w-3" /> {estado}
           </Badge>
         )
-      case "En proceso":
+      case "EN_ESPERA":
         return (
           <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
-            <RefreshCw className="mr-1 h-3 w-3" /> {estado}
+            <RefreshCw className="mr-1 h-3 w-3" /> EN ESPERA
           </Badge>
         )
-      case "Cerrada":
+      case "CERRADA_EXITO":
         return (
           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-            <CheckCircle className="mr-1 h-3 w-3" /> {estado}
+            <CheckCircle className="mr-1 h-3 w-3" /> CERRADA EXITO
           </Badge>
         )
+      case "ASIGNADA":
+    return (
+      <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
+        <UserCheck className="mr-1 h-3 w-3" /> ASIGNADA
+      </Badge>
+    )
       default:
         return <Badge variant="outline">{estado}</Badge>
     }
@@ -123,11 +161,13 @@ export function UsuarioDashboard() {
 
   const getPrioridadBadge = (prioridad) => {
     switch (prioridad) {
-      case "Alta":
-        return <Badge className="bg-red-500">{prioridad}</Badge>
-      case "Media":
+      case "MUY_ALTA":
+        return <Badge className="bg-red-500">MUY ALTA</Badge>
+      case "ALTA":
+        return <Badge className="bg-orange-500">{prioridad}</Badge>
+      case "MEDIA":
         return <Badge className="bg-yellow-500">{prioridad}</Badge>
-      case "Baja":
+      case "BAJA":
         return <Badge className="bg-green-500">{prioridad}</Badge>
       default:
         return <Badge>{prioridad}</Badge>
@@ -155,7 +195,7 @@ export function UsuarioDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidencias.length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidencias.filter((inc) => inc.estado === "Cerrada").length} resueltas
+              {incidencias.filter((inc) => inc.estado === "CERRADA_EXITO").length} resueltas
             </p>
           </CardContent>
         </Card>
@@ -165,9 +205,9 @@ export function UsuarioDashboard() {
             <AlertCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "Abierta").length}</div>
+            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "ALTA").length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidencias.filter((inc) => inc.estado === "Abierta" && inc.prioridad === "Alta").length} de alta
+              {incidencias.filter((inc) => inc.estado === "ALTA" && inc.prioridad === "ALTA").length} de alta
               prioridad
             </p>
           </CardContent>
@@ -178,7 +218,7 @@ export function UsuarioDashboard() {
             <RefreshCw className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "En proceso").length}</div>
+            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "ASIGNADA").length}</div>
             <p className="text-xs text-muted-foreground">Siendo atendidas por técnicos</p>
           </CardContent>
         </Card>
@@ -215,9 +255,9 @@ export function UsuarioDashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
-                        <SelectItem value="Abierta">Abierta</SelectItem>
-                        <SelectItem value="En proceso">En proceso</SelectItem>
-                        <SelectItem value="Cerrada">Cerrada</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
+                        <SelectItem value="EN_ESPERA">En espera</SelectItem>
+                        <SelectItem value="CERRADA_EXITO">Cerrada</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -232,9 +272,10 @@ export function UsuarioDashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todas</SelectItem>
-                        <SelectItem value="Alta">Alta</SelectItem>
-                        <SelectItem value="Media">Media</SelectItem>
-                        <SelectItem value="Baja">Baja</SelectItem>
+                         <SelectItem value="MUY_ALTA">Muy alta</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
+                        <SelectItem value="MEDIA">Media</SelectItem>
+                        <SelectItem value="BAJA">Baja</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -285,11 +326,11 @@ export function UsuarioDashboard() {
                   filteredIncidencias.map((incidencia) => (
                     <TableRow key={incidencia.id}>
                       <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                      <TableCell>{incidencia.titulo}</TableCell>
+                      <TableCell>{incidencia.descripcion}</TableCell>
                       <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                       <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                      <TableCell>{incidencia.tecnico || "Sin asignar"}</TableCell>
-                      <TableCell>{incidencia.fechaCreacion}</TableCell>
+                      <TableCell>{incidencia.tecnico?.username || "Sin asignar"}</TableCell>
+                      <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                     </TableRow>
                   ))
                 ) : (
