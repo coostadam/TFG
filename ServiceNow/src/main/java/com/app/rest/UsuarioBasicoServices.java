@@ -135,7 +135,7 @@ public class UsuarioBasicoServices {
             boolean opened = udi.reabrirIncidencia(i);
             if (opened) {
                 return Response.ok("Incidencia reabierta").build();
-            }else{
+            } else {
                 return Response.status(Response.Status.NOT_MODIFIED)
                         .entity("No se pudo reabrir la incidencia")
                         .build();
@@ -144,6 +144,27 @@ public class UsuarioBasicoServices {
             e.printStackTrace();
             return Response.serverError().build();
         }
-
     }
+
+    @GET
+    @Path("/tipos")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTiposIncidencia(@Context HttpServletRequest request) {
+        UsuarioBasico u = (UsuarioBasico) request.getSession().getAttribute("usuario");
+
+        if (u == null && request.getSession().getAttribute("tipo") != "USUARIO_BASICO") {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No autenticado")
+                    .build();
+        }
+
+        try (UtilDAOimpl udi = new UtilDAOimpl()) {
+            List<TipoIncidencia> tipos = udi.getTiposIncidencia();
+            return Response.ok(tipos).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
+
 }

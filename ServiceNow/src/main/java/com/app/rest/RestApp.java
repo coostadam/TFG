@@ -12,6 +12,9 @@ public class RestApp extends Application {
         Set<Class<?>> classes = new HashSet<>();
         classes.add(AuthService.class);
         classes.add(UsuarioBasicoServices.class);
+        classes.add(GestorServices.class);
+        classes.add(TecnicoServices.class);
+        classes.add(AdministradorServices.class);
         classes.add(CORSFilter.class);
         return classes;
     } 

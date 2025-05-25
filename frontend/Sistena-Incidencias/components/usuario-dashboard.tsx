@@ -15,6 +15,7 @@ export function UsuarioDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [incidencias, setIncidencias] = useState([])
   const [filteredIncidencias, setFilteredIncidencias] = useState([])
+  const [tipos, setTipos] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" })
   const [filters, setFilters] = useState({
     estado: "",
@@ -25,27 +26,27 @@ export function UsuarioDashboard() {
   const [crearIncidenciaOpen, setCrearIncidenciaOpen] = useState(false)
 
   useEffect(() => {
-  const fetchIncidencias = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/ServiceNow/resources/user/incidencias", {
-        method: "GET",
-        credentials: "include",
-      });
+    const fetchIncidencias = async () => {
+      try {
+        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/user/incidencias", {
+          method: "GET",
+          credentials: "include",
+        });
 
-      if (!response.ok) {
-        throw new Error("Error al obtener incidencias");
+        if (!response.ok) {
+          throw new Error("Error al obtener incidencias");
+        }
+
+        const data = await response.json();
+
+        setIncidencias(data);
+      } catch (error) {
+        console.error(error);
       }
+    };
 
-      const data = await response.json();
-
-      setIncidencias(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  fetchIncidencias();
-}, []);
+    fetchIncidencias();
+  }, []);
 
 
   useEffect(() => {
@@ -94,29 +95,29 @@ export function UsuarioDashboard() {
   }
 
   const handleSaveIncidencia = async (incidenciaData) => {
-  try {
-    const response = await fetch("/user/add", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(incidenciaData),
-    });
+    try {
+      const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/user/add", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(incidenciaData),
+      });
 
-    if (!response.ok) {
-      throw new Error("Error al crear la incidencia");
+      if (!response.ok) {
+        throw new Error("Error al crear la incidencia");
+      }
+
+      const nuevaIncidencia = await response.json();
+
+      // Actualizar la lista sin necesidad de recargar desde cero
+      setIncidencias((prev) => [...prev, nuevaIncidencia]);
+      setCrearIncidenciaOpen(false);
+    } catch (error) {
+      console.error("Error creando incidencia:", error);
     }
-
-    const nuevaIncidencia = await response.json();
-
-    // Actualizar la lista sin necesidad de recargar desde cero
-    setIncidencias((prev) => [...prev, nuevaIncidencia]);
-    setCrearIncidenciaOpen(false);
-  } catch (error) {
-    console.error("Error creando incidencia:", error);
-  }
-};
+  };
 
 
   const resetFilters = () => {
@@ -149,11 +150,11 @@ export function UsuarioDashboard() {
           </Badge>
         )
       case "ASIGNADA":
-    return (
-      <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
-        <UserCheck className="mr-1 h-3 w-3" /> ASIGNADA
-      </Badge>
-    )
+        return (
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
+            <UserCheck className="mr-1 h-3 w-3" /> {estado}
+          </Badge>
+        )
       default:
         return <Badge variant="outline">{estado}</Badge>
     }
@@ -173,6 +174,32 @@ export function UsuarioDashboard() {
         return <Badge>{prioridad}</Badge>
     }
   }
+
+  useEffect(() => {
+
+    const fecthTipos = async () => {
+      try {
+        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/user/tipos", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener los tipos");
+        }
+
+        const data = await response.json();
+
+        setTipos(data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fecthTipos();
+
+  });
+
 
   return (
     <div className="space-y-6">
@@ -272,7 +299,7 @@ export function UsuarioDashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todas</SelectItem>
-                         <SelectItem value="MUY_ALTA">Muy alta</SelectItem>
+                        <SelectItem value="MUY_ALTA">Muy alta</SelectItem>
                         <SelectItem value="ALTA">Alta</SelectItem>
                         <SelectItem value="MEDIA">Media</SelectItem>
                         <SelectItem value="BAJA">Baja</SelectItem>
@@ -353,6 +380,7 @@ export function UsuarioDashboard() {
         onSave={handleSaveIncidencia}
         tecnicos={[]}
         isUsuario={true}
+        tipos={tipos}
       />
     </div>
   )

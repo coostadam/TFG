@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AlertCircle, CheckCircle, Clock, Filter, Plus, RefreshCw, Search, Wrench } from "lucide-react"
+import { AlertCircle, CheckCircle, Clock, Filter, Plus, RefreshCw, Search, Wrench, UserCheck } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -31,19 +31,39 @@ export function TecnicoDashboard() {
   const [currentIncidencia, setCurrentIncidencia] = useState(null)
 
   useEffect(() => {
-    // Inicializar datos
-    setIncidencias(mockIncidencias)
+    const fetchIncidencias = async () => {
+      try {
+        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/tecnico/incidencias/misIncidencias", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener incidencias");
+        }
+
+        const data = await response.json();
+
+        console.log("Incidencias recibidas:", data)
+
+        setIncidencias(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchIncidencias();
   }, [])
 
   useEffect(() => {
     // Filtrar incidencias según la pestaña activa y la búsqueda
     let filtered = [...incidencias]
 
-    if (activeTab === "asignadas") {
-      filtered = filtered.filter((inc) => inc.tecnico === "tecnico@example.com")
-    } else if (activeTab === "propias") {
-      filtered = filtered.filter((inc) => inc.creador === "tecnico@example.com")
-    }
+    // if (activeTab === "asignadas") {
+    // filtered = filtered.filter((inc) => inc.tecnico === "tecnico@example.com")
+    //} else if (activeTab === "propias") {
+    // filtered = filtered.filter((inc) => inc.creador === "tecnico@example.com")
+    //}
 
     // Aplicar filtros de estado y prioridad
     if (filters.estado) {
@@ -103,14 +123,31 @@ export function TecnicoDashboard() {
     setCrearIncidenciaOpen(false)
   }
 
-  const handleResolverGuardar = (resolucion) => {
-    // Actualizar incidencia resuelta
-    setIncidencias(
-      incidencias.map((inc) => (inc.id === currentIncidencia.id ? { ...inc, estado: "Cerrada", resolucion } : inc)),
-    )
-    setResolverIncidenciaOpen(false)
-    setCurrentIncidencia(null)
+  const handleResolverGuardar = async (resolucion) => {
+  try {
+    const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ solucion: resolucion })  
+    });
+
+    if (response.ok) {
+      setCurrentIncidencia(null);
+      window.location.reload();
+    } else {
+      const errorText = await response.text();
+      console.error("Error al cerrar incidencia:", errorText);
+      alert("No se pudo cerrar la incidencia: " + errorText);
+    }
+  } catch (error) {
+    console.error("Error de red al cerrar incidencia:", error);
+    alert("Error de red al cerrar la incidencia");
   }
+};
+
 
   const resetFilters = () => {
     setFilters({
@@ -123,22 +160,28 @@ export function TecnicoDashboard() {
 
   const getEstadoBadge = (estado) => {
     switch (estado) {
-      case "Abierta":
+      case "ALTA":
         return (
           <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">
             <AlertCircle className="mr-1 h-3 w-3" /> {estado}
           </Badge>
         )
-      case "En proceso":
+      case "EN_ESPERA":
         return (
           <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
-            <RefreshCw className="mr-1 h-3 w-3" /> {estado}
+            <RefreshCw className="mr-1 h-3 w-3" /> EN ESPERA
           </Badge>
         )
-      case "Cerrada":
+      case "CERRADA_EXITO":
         return (
           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-            <CheckCircle className="mr-1 h-3 w-3" /> {estado}
+            <CheckCircle className="mr-1 h-3 w-3" /> CERRADA EXITO
+          </Badge>
+        )
+      case "ASIGNADA":
+        return (
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
+            <UserCheck className="mr-1 h-3 w-3" /> {estado}
           </Badge>
         )
       default:
@@ -148,19 +191,21 @@ export function TecnicoDashboard() {
 
   const getPrioridadBadge = (prioridad) => {
     switch (prioridad) {
-      case "Alta":
-        return <Badge className="bg-red-500">{prioridad}</Badge>
-      case "Media":
+      case "MUY_ALTA":
+        return <Badge className="bg-red-500">MUY ALTA</Badge>
+      case "ALTA":
+        return <Badge className="bg-orange-500">{prioridad}</Badge>
+      case "MEDIA":
         return <Badge className="bg-yellow-500">{prioridad}</Badge>
-      case "Baja":
+      case "BAJA":
         return <Badge className="bg-green-500">{prioridad}</Badge>
       default:
         return <Badge>{prioridad}</Badge>
     }
   }
 
-  const incidenciasAsignadas = incidencias.filter((inc) => inc.tecnico === "tecnico@example.com")
-  const incidenciasAbiertas = incidenciasAsignadas.filter((inc) => inc.estado !== "Cerrada")
+  const incidenciasAsignadas = incidencias.filter((inc) => inc.tecnico.username === localStorage.getItem("userEmail"))
+  const incidenciasAbiertas = incidenciasAsignadas.filter((inc) => inc.estado !== "CERRADA_EXITO")
 
   return (
     <div className="space-y-6">
@@ -183,7 +228,7 @@ export function TecnicoDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidenciasAsignadas.length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidenciasAsignadas.filter((inc) => inc.estado === "Cerrada").length} resueltas
+              {incidenciasAsignadas.filter((inc) => inc.estado === "CERRADA_EXITO").length} resueltas
             </p>
           </CardContent>
         </Card>
@@ -195,7 +240,7 @@ export function TecnicoDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidenciasAbiertas.length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidenciasAbiertas.filter((inc) => inc.prioridad === "Alta").length} de alta prioridad
+              {incidenciasAbiertas.filter((inc) => inc.prioridad === "ALTA").length} de alta prioridad
             </p>
           </CardContent>
         </Card>
@@ -206,13 +251,13 @@ export function TecnicoDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {incidenciasAsignadas.filter((inc) => inc.estado === "En proceso").length}
+              {incidenciasAsignadas.filter((inc) => inc.estado === "ASIGNADA").length}
             </div>
             <p className="text-xs text-muted-foreground">
               {Math.round(
-                (incidenciasAsignadas.filter((inc) => inc.estado === "En proceso").length /
+                (incidenciasAsignadas.filter((inc) => inc.estado === "ASIGNADA").length /
                   incidenciasAsignadas.length) *
-                  100,
+                100,
               ) || 0}
               % del total
             </p>
@@ -253,10 +298,10 @@ export function TecnicoDashboard() {
                         <SelectValue placeholder="Todos" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="todos">Todos</SelectItem>
-                        <SelectItem value="Abierta">Abierta</SelectItem>
-                        <SelectItem value="En proceso">En proceso</SelectItem>
-                        <SelectItem value="Cerrada">Cerrada</SelectItem>
+                        <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="ASIGNADA">Asignada</SelectItem>
+                        <SelectItem value="EN_ESPERA">En espera</SelectItem>
+                        <SelectItem value="CERRADA_EXITO">Cerrada</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -270,10 +315,11 @@ export function TecnicoDashboard() {
                         <SelectValue placeholder="Todas" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="todas">Todas</SelectItem>
-                        <SelectItem value="Alta">Alta</SelectItem>
-                        <SelectItem value="Media">Media</SelectItem>
-                        <SelectItem value="Baja">Baja</SelectItem>
+                        <SelectItem value="all">Todas</SelectItem>
+                        <SelectItem value="MUY_ALTA">Muy alta</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
+                        <SelectItem value="MEDIA">Media</SelectItem>
+                        <SelectItem value="BAJA">Baja</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -326,13 +372,13 @@ export function TecnicoDashboard() {
                     filteredIncidencias.map((incidencia) => (
                       <TableRow key={incidencia.id}>
                         <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                        <TableCell>{incidencia.titulo}</TableCell>
+                        <TableCell>{incidencia.descripcion}</TableCell>
                         <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                         <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.creador}</TableCell>
-                        <TableCell>{incidencia.fechaCreacion}</TableCell>
+                        <TableCell>{incidencia.usuario.username}</TableCell>
+                        <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
-                          {incidencia.estado !== "Cerrada" && (
+                          {incidencia.estado !== "CERRADA_EXITO" && (
                             <Button variant="outline" size="sm" onClick={() => handleResolverIncidencia(incidencia)}>
                               Resolver
                             </Button>
@@ -392,11 +438,11 @@ export function TecnicoDashboard() {
                     filteredIncidencias.map((incidencia) => (
                       <TableRow key={incidencia.id}>
                         <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                        <TableCell>{incidencia.titulo}</TableCell>
+                        <TableCell>{incidencia.descripcion}</TableCell>
                         <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                         <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico || "Sin asignar"}</TableCell>
-                        <TableCell>{incidencia.fechaCreacion}</TableCell>
+                        <TableCell>{incidencia.tecnico.username || "Sin asignar"}</TableCell>
+                        <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                       </TableRow>
                     ))
                   ) : (

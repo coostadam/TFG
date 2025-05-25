@@ -98,7 +98,7 @@ public class TecnicoServices {
     public Response cerrarIncidencia(@PathParam("id") long id, SolucionDTO solucionDTO, @Context HttpServletRequest request) {
         Tecnico t = (Tecnico) request.getSession().getAttribute("usuario");
 
-        if (t == null && request.getSession().getAttribute("tipo") != "TECNICO") {
+        if (t == null) {
             return Response.status(Response.Status.UNAUTHORIZED)
                     .entity("No autenticado")
                     .build();

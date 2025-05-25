@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -22,30 +22,32 @@ export function CrearIncidenciaDialog({
   tecnicos = [],
   isUsuario = false,
   isTecnico = false,
+  tipos = [],
 }) {
   const [titulo, setTitulo] = useState("")
   const [descripcion, setDescripcion] = useState("")
   const [prioridad, setPrioridad] = useState("Media")
   const [tecnico, setTecnico] = useState("")
+  const [tipo, setTipo] = useState("")
+  const [tipoSeleccionado, setTipoSeleccionado] = useState("")
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
     const incidenciaData = {
-      titulo,
-      descripcion,
       prioridad,
-      estado: "Abierta",
-      tecnico: tecnico || null,
+      titulo,
+      tipo: tipoSeleccionado,
+      descripcion
     }
 
     onSave(incidenciaData)
 
-    // Limpiar formulario
     setTitulo("")
     setDescripcion("")
     setPrioridad("Media")
     setTecnico("")
+    setTipoSeleccionado("")
   }
 
   return (
@@ -88,6 +90,21 @@ export function CrearIncidenciaDialog({
                   <SelectItem value="Alta">Alta</SelectItem>
                   <SelectItem value="Media">Media</SelectItem>
                   <SelectItem value="Baja">Baja</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="tipo">Tipo de incidencia</Label>
+              <Select value={tipoSeleccionado} onValueChange={setTipoSeleccionado}>
+                <SelectTrigger id="tipo">
+                  <SelectValue placeholder="Selecciona un tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  {tipos.map((tipo, index) => (
+                    <SelectItem key={index} value={tipo.nombre}>
+                      {tipo.nombre}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

@@ -25,7 +25,7 @@ public class IncidenciaDTO {
         this.descripcion = incidencia.getDescripcion();
         this.estado = incidencia.getEstado();
         this.prioridad = incidencia.getPrioridad();
-        this.fechaCreacion = incidencia.getFechaApertura();
+        this.fechaCreacion = incidencia.getFechaEntrada();
 
         if (incidencia.getUsuario() != null) {
             this.usuario = new UsuarioBasicoDTO(incidencia.getUsuario());
