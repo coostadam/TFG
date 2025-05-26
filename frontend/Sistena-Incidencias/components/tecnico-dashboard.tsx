@@ -14,10 +14,26 @@ import { CrearIncidenciaDialog } from "@/components/crear-incidencia-dialog"
 import { ResolverIncidenciaDialog } from "@/components/resolver-incidencia-dialog"
 import { mockIncidencias } from "@/lib/mock-data"
 
+interface Incidencia {
+  id: number
+  descripcion: string
+  estado: string
+  prioridad: string
+  titulo?: string
+  fechaCreacion: string
+  usuario: {
+    username: string
+  }
+  tecnico: {
+    username?: string
+  }
+}
+
+
 export function TecnicoDashboard() {
   const [activeTab, setActiveTab] = useState("asignadas")
   const [searchQuery, setSearchQuery] = useState("")
-  const [incidencias, setIncidencias] = useState([])
+  const [incidencias, setIncidencias] = useState<Incidencia[]>([])
   const [filteredIncidencias, setFilteredIncidencias] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" })
   const [filters, setFilters] = useState({
@@ -53,41 +69,41 @@ export function TecnicoDashboard() {
     fetchIncidencias();
   }, [])
 
-  useEffect(() => {
-    // Filtrar incidencias según la pestaña activa y la búsqueda
-    let filtered = [...incidencias]
+useEffect(() => {
+  // Filtrar incidencias según la pestaña activa y la búsqueda
+  let filtered = [...incidencias]
 
-    if (filters.estado) {
-      filtered = filtered.filter((inc) => inc.estado === filters.estado)
-    }
+  if (filters.estado && filters.estado !== "all") {
+    filtered = filtered.filter((inc) => inc.estado === filters.estado)
+  }
 
-    if (filters.prioridad) {
-      filtered = filtered.filter((inc) => inc.prioridad === filters.prioridad)
-    }
+  if (filters.prioridad && filters.prioridad !== "all") {
+    filtered = filtered.filter((inc) => inc.prioridad === filters.prioridad)
+  }
 
-    // Aplicar búsqueda
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (inc) =>
-          inc.descripcion.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
-      )
-    }
+  // Aplicar búsqueda
+  if (searchQuery) {
+    filtered = filtered.filter(
+      (inc) =>
+        inc.descripcion.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
+    )
+  }
 
-    // Aplicar ordenamiento
-    if (sortConfig.key) {
-      filtered.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? -1 : 1
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? 1 : -1
-        }
-        return 0
-      })
-    }
+  // Aplicar ordenamiento
+  if (sortConfig.key) {
+    filtered.sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? -1 : 1
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === "asc" ? 1 : -1
+      }
+      return 0
+    })
+  }
 
-    setFilteredIncidencias(filtered)
-  }, [incidencias, activeTab, searchQuery, sortConfig, filters])
+  setFilteredIncidencias(filtered)
+}, [incidencias, activeTab, searchQuery, sortConfig, filters])
 
   const handleSort = (key) => {
     let direction = "asc"
@@ -184,6 +200,8 @@ export function TecnicoDashboard() {
 
   const incidenciasAsignadas = incidencias.filter((inc) => inc.tecnico.username === localStorage.getItem("userEmail"))
   const incidenciasAbiertas = incidenciasAsignadas.filter((inc) => inc.estado !== "CERRADA_EXITO")
+  
+  
 
   return (
     <div className="space-y-6">
@@ -357,7 +375,7 @@ export function TecnicoDashboard() {
                         <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
                           {incidencia.estado !== "CERRADA_EXITO" && (
-                            <Button variant="outline" size="sm" onClick={() => handleResolverIncidencia(incidencia)}>
+                            <Button  variant="outline" size="sm" onClick={() => handleResolverIncidencia(incidencia)}>
                               Resolver
                             </Button>
                           )}
