@@ -72,7 +72,7 @@ export function GestorDashboard() {
     if (searchQuery) {
       filtered = filtered.filter(
         (inc) =>
-          inc.titulo.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
+          inc.descripcion.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
       )
     }
 
