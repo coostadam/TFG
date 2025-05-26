@@ -8,18 +8,15 @@ public class TecnicoDTO {
     private String username;
     private String correo;
 
+    public TecnicoDTO() {
+    }
+
     public TecnicoDTO(Tecnico tec) {
         this.id = tec.getId();
         this.username = tec.getUsuario();
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    
+    
 
     public String getUsername() {
         return username;

@@ -6,6 +6,7 @@ import com.app.pojo.Gestor;
 import com.app.pojo.Incidencia;
 import com.app.pojo.Tecnico;
 import com.app.pojo.TipoIncidencia;
+import com.app.pojo.TipoUsuario;
 import com.app.utils.HibernateUtil;
 import jakarta.persistence.Query;
 import java.sql.Date;
@@ -90,24 +91,20 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
     }
 
     @Override
-    public boolean asigTecnico(List<Tecnico> tecnicos, Incidencia i) {
-        if (tecnicos == null || tecnicos.isEmpty()) {
-            return false;
-        }
-
+    public boolean asigTecnico(Tecnico tecnico, Incidencia i, Gestor gest) {      
         Transaction transaction = null;
 
         try {
-            Tecnico tecnico = tecnicos.get(0);
             transaction = session.beginTransaction();
 
             Query query = session.createQuery(
-                    "UPDATE Incidencia i SET i.tecnico = :tecnico, i.estado = :estado, i.fechaApertura = :fecha WHERE i.id = :id"
+                    "UPDATE Incidencia i SET i.tecnico = :tecnico, i.estado = :estado, i.fechaApertura = :fecha, i.gestor = :gestor WHERE i.id = :id"
             );
             query.setParameter("tecnico", tecnico);
             query.setParameter("estado", EstadoIncidencia.ASIGNADA);
             query.setParameter("fecha", Date.valueOf(LocalDate.now()));
             query.setParameter("id", i.getId());
+            query.setParameter("gestor", gest);
 
             int result = query.executeUpdate();
 
@@ -127,6 +124,12 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<Tecnico> getTecnicos() {
+        return session.createQuery("SELECT u FROM Usuario u WHERE tipoUsuario = :tipo", Tecnico.class)
+                .getResultList();
     }
 
     @Override

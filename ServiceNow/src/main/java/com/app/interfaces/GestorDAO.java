@@ -5,7 +5,7 @@ import com.app.pojo.*;
 import java.util.List;
 
 public interface GestorDAO {
-    boolean asigTecnico(List<Tecnico> tecnicos, Incidencia i);
+    boolean asigTecnico(Tecnico tecnico, Incidencia i, Gestor gest);
 
     List<Incidencia> getIncidenciasIfEspera();
 
@@ -17,4 +17,5 @@ public interface GestorDAO {
 
     boolean asigGestor(Gestor g, Incidencia i);
 
+    List<Tecnico> getTecnicos();
 }
