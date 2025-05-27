@@ -8,14 +8,8 @@ public interface GestorDAO {
     boolean asigTecnico(List<Tecnico> tecnicos, Incidencia i, Gestor gest);
 
     List<Incidencia> getIncidenciasIfEspera();
-
-    List<Incidencia> getIncidenciasByTecnico(Tecnico tecnico);
-
-    List<Incidencia> listarIncidenciasPorTipo(TipoIncidencia tipo);
-    
+ 
     Incidencia getIncidenciaById(long id);
-
-    boolean asigGestor(Gestor g, Incidencia i);
 
     List<Tecnico> getTecnicos();
 }

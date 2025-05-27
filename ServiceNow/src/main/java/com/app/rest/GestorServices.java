@@ -1,17 +1,12 @@
 package com.app.rest;
 
 import com.app.dto.IncidenciaDTO;
-import com.app.dto.TecnicoDTO;
-import com.app.dto.TecnicoDTOResolverIncidencia;
 import com.app.implementations.GestorDAOimpl;
-import com.app.implementations.TecnicoDAOimpl;
 import com.app.implementations.UtilDAOimpl;
 import com.app.pojo.Gestor;
 import com.app.pojo.Incidencia;
 import com.app.pojo.Tecnico;
-import com.app.pojo.TipoIncidencia;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
