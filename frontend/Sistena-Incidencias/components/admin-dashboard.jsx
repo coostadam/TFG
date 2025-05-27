@@ -14,6 +14,7 @@ import {
   Trash2,
   Users,
   ClipboardList,
+  UserCheck,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -49,38 +50,61 @@ export function AdminDashboard() {
   const [crearIncidenciaOpen, setCrearIncidenciaOpen] = useState(false)
   const [editarIncidenciaOpen, setEditarIncidenciaOpen] = useState(false)
   const [editarUsuarioOpen, setEditarUsuarioOpen] = useState(false)
-  const [eliminarDialogOpen, setEliminarDialogOpen] = useState(false)
   const [currentItem, setCurrentItem] = useState(null)
-  const [itemType, setItemType] = useState(null) // 'incidencia' o 'usuario'
 
   useEffect(() => {
-    // Inicializar datos
-    setIncidencias(mockIncidencias)
+    const fetchIncidencias = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/admin/allIncidencias", {
+          method: "GET",
+          credentials: "include",
+        });
 
-    // Cargar usuarios desde localStorage
-    const usuariosGuardados = JSON.parse(localStorage.getItem("usuarios") || "[]")
-    setUsuarios(usuariosGuardados)
+        if (!response.ok) {
+          throw new Error("Error al obtener incidencias");
+        }
 
-    // Establecer la pestaña activa basada en la URL
-    if (tabParam === "usuarios") {
-      setActiveTab("usuarios")
-    }
+        const data = await response.json();
+
+        setIncidencias(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchIncidencias();
+
+    const fetchUsuarios = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/admin/allUsers", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al obtener usuarios");
+        }
+
+        const data = await response.json();
+
+        setUsuarios(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchUsuarios();
   }, [tabParam])
 
   useEffect(() => {
     // Filtrar incidencias según la pestaña activa y la búsqueda
     let filtered = [...incidencias]
 
-    if (activeTab === "propias") {
-      filtered = filtered.filter((inc) => inc.creador === "admin@example.com")
-    }
-
-    // Aplicar filtros de estado y prioridad
-    if (filters.estado) {
+    if (filters.estado && filters.estado !== "all") {
       filtered = filtered.filter((inc) => inc.estado === filters.estado)
     }
 
-    if (filters.prioridad) {
+    if (filters.prioridad && filters.prioridad !== "all") {
       filtered = filtered.filter((inc) => inc.prioridad === filters.prioridad)
     }
 
@@ -88,7 +112,7 @@ export function AdminDashboard() {
     if (searchQuery) {
       filtered = filtered.filter(
         (inc) =>
-          inc.titulo.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
+          inc.descripcion.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
       )
     }
 
@@ -116,8 +140,8 @@ export function AdminDashboard() {
       filtered = filtered.filter(
         (user) =>
           user.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.apellidos?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.apellido?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          user.correo?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           user.usuario?.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     }
@@ -146,52 +170,31 @@ export function AdminDashboard() {
     setSortConfig({ key, direction })
   }
 
-  const handleEditIncidencia = (incidencia) => {
-    setCurrentItem(incidencia)
-    setEditarIncidenciaOpen(true)
-  }
-
   const handleEditUsuario = (usuario) => {
     setCurrentItem(usuario)
     setEditarUsuarioOpen(true)
   }
 
-  const handleDeleteConfirm = (item, type) => {
-    setCurrentItem(item)
-    setItemType(type)
-    setEliminarDialogOpen(true)
-  }
+  const handleEditIncidencia = async (incidencia) => {
+    setCurrentItem(incidencia);
 
-  const confirmDelete = () => {
-    if (itemType === "incidencia") {
-      setIncidencias(incidencias.filter((inc) => inc.id !== currentItem.id))
-    } else if (itemType === "usuario") {
-      // Eliminar usuario del localStorage
-      const usuariosActualizados = usuarios.filter((user) => user.id !== currentItem.id)
-      localStorage.setItem("usuarios", JSON.stringify(usuariosActualizados))
-      setUsuarios(usuariosActualizados)
-    }
-    setEliminarDialogOpen(false)
-  }
+    try {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/incidenciaEspera/${incidencia.id}`, {
+        method: "POST",
+        credentials: "include",
+      });
 
-  const handleSaveIncidencia = (incidenciaData) => {
-    if (currentItem) {
-      // Editar incidencia existente
-      setIncidencias(incidencias.map((inc) => (inc.id === currentItem.id ? { ...inc, ...incidenciaData } : inc)))
-    } else {
-      // Crear nueva incidencia
-      const newIncidencia = {
-        id: Math.max(...incidencias.map((inc) => inc.id)) + 1,
-        creador: "admin@example.com",
-        fechaCreacion: new Date().toISOString().split("T")[0],
-        ...incidenciaData,
+      if (!response.ok) {
+        throw new Error("Error al obtener usuarios");
       }
-      setIncidencias([...incidencias, newIncidencia])
+
+      window.location.reload();
+
+    } catch (error) {
+      console.error(error);
     }
-    setEditarIncidenciaOpen(false)
-    setCrearIncidenciaOpen(false)
-    setCurrentItem(null)
-  }
+  };
+
 
   const handleSaveUsuario = (usuarioData) => {
     if (currentItem) {
@@ -219,22 +222,28 @@ export function AdminDashboard() {
 
   const getEstadoBadge = (estado) => {
     switch (estado) {
-      case "Abierta":
+      case "ALTA":
         return (
           <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">
             <AlertCircle className="mr-1 h-3 w-3" /> {estado}
           </Badge>
         )
-      case "En proceso":
+      case "EN_ESPERA":
         return (
           <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
-            <RefreshCw className="mr-1 h-3 w-3" /> {estado}
+            <RefreshCw className="mr-1 h-3 w-3" /> EN ESPERA
           </Badge>
         )
-      case "Cerrada":
+      case "CERRADA_EXITO":
         return (
           <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-            <CheckCircle className="mr-1 h-3 w-3" /> {estado}
+            <CheckCircle className="mr-1 h-3 w-3" /> CERRADA EXITO
+          </Badge>
+        )
+      case "ASIGNADA":
+        return (
+          <Badge variant="outline" className="bg-yellow-50 text-yellow-600 border-yellow-200">
+            <UserCheck className="mr-1 h-3 w-3" /> {estado}
           </Badge>
         )
       default:
@@ -244,11 +253,13 @@ export function AdminDashboard() {
 
   const getPrioridadBadge = (prioridad) => {
     switch (prioridad) {
-      case "Alta":
-        return <Badge className="bg-red-500">{prioridad}</Badge>
-      case "Media":
+      case "MUY_ALTA":
+        return <Badge className="bg-red-500">MUY ALTA</Badge>
+      case "ALTA":
+        return <Badge className="bg-orange-500">{prioridad}</Badge>
+      case "MEDIA":
         return <Badge className="bg-yellow-500">{prioridad}</Badge>
-      case "Baja":
+      case "BAJA":
         return <Badge className="bg-green-500">{prioridad}</Badge>
       default:
         return <Badge>{prioridad}</Badge>
@@ -257,25 +268,25 @@ export function AdminDashboard() {
 
   const getRolBadge = (tipo) => {
     switch (tipo) {
-      case "admin":
+      case "ADMINISTRADOR":
         return (
           <Badge variant="outline" className="bg-purple-50 text-purple-600 border-purple-200">
             Administrador
           </Badge>
         )
-      case "tecnico":
+      case "TECNICO":
         return (
           <Badge variant="outline" className="bg-blue-50 text-blue-600 border-blue-200">
             Técnico
           </Badge>
         )
-      case "gestor":
+      case "GESTOR":
         return (
           <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">
             Gestor
           </Badge>
         )
-      case "usuario":
+      case "USUARIO_BASICO":
         return (
           <Badge variant="outline" className="bg-gray-50 text-gray-600 border-gray-200">
             Usuario
@@ -293,14 +304,6 @@ export function AdminDashboard() {
           <h1 className="text-2xl font-bold tracking-tight">Panel de Administrador</h1>
           <p className="text-muted-foreground">Gestiona todas las incidencias y usuarios del sistema.</p>
         </div>
-        <Button
-          onClick={() => {
-            setCurrentItem(null)
-            setCrearIncidenciaOpen(true)
-          }}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Nueva Incidencia
-        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -312,7 +315,7 @@ export function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidencias.length}</div>
             <p className="text-xs text-muted-foreground">
-              +{incidencias.filter((inc) => inc.fechaCreacion === new Date().toISOString().split("T")[0]).length} hoy
+              +{incidencias.filter((inc) => inc.fechaCreacion.replace(/Z$/, "") === new Date().toISOString().split("T")[0]).length} hoy
             </p>
           </CardContent>
         </Card>
@@ -322,22 +325,22 @@ export function AdminDashboard() {
             <AlertCircle className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "Abierta").length}</div>
+            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "ALTA").length}</div>
             <p className="text-xs text-muted-foreground">
-              {Math.round((incidencias.filter((inc) => inc.estado === "Abierta").length / incidencias.length) * 100)}%
+              {Math.round((incidencias.filter((inc) => inc.estado === "ALTA").length / incidencias.length) * 100)}%
               del total
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">En Proceso</CardTitle>
+            <CardTitle className="text-sm font-medium">Asignadas</CardTitle>
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "En proceso").length}</div>
+            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "ASIGNADAS").length}</div>
             <p className="text-xs text-muted-foreground">
-              {Math.round((incidencias.filter((inc) => inc.estado === "En proceso").length / incidencias.length) * 100)}
+              {Math.round((incidencias.filter((inc) => inc.estado === "ASIGNADAS").length / incidencias.length) * 100)}
               % del total
             </p>
           </CardContent>
@@ -350,7 +353,7 @@ export function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{usuarios.length}</div>
             <p className="text-xs text-muted-foreground">
-              {usuarios.filter((user) => user.tipo === "tecnico").length} técnicos disponibles
+              {usuarios.filter((user) => user.tipoUsuario === "TECNICO").length} técnicos disponibles
             </p>
           </CardContent>
         </Card>
@@ -360,7 +363,6 @@ export function AdminDashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <TabsList>
             <TabsTrigger value="todas">Todas las Incidencias</TabsTrigger>
-            <TabsTrigger value="propias">Mis Incidencias</TabsTrigger>
             <TabsTrigger value="usuarios">Gestión de Usuarios</TabsTrigger>
           </TabsList>
 
@@ -386,18 +388,15 @@ export function AdminDashboard() {
                   <div className="p-2 space-y-2">
                     <div className="space-y-1">
                       <label className="text-xs font-medium">Estado</label>
-                      <Select
-                        value={filters.estado}
-                        onValueChange={(value) => setFilters({ ...filters, estado: value })}
-                      >
+                      <Select value={filters.estado} onValueChange={(value) => setFilters({ ...filters, estado: value })}>
                         <SelectTrigger>
                           <SelectValue placeholder="Todos" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Todos</SelectItem>
-                          <SelectItem value="Abierta">Abierta</SelectItem>
-                          <SelectItem value="En proceso">En proceso</SelectItem>
-                          <SelectItem value="Cerrada">Cerrada</SelectItem>
+                          <SelectItem value="ALTA">Alta</SelectItem>
+                          <SelectItem value="ASIGNADA">Asignada</SelectItem>
+                          <SelectItem value="CERRADA_EXITO">Cerrada</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -412,9 +411,10 @@ export function AdminDashboard() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">Todas</SelectItem>
-                          <SelectItem value="Alta">Alta</SelectItem>
-                          <SelectItem value="Media">Media</SelectItem>
-                          <SelectItem value="Baja">Baja</SelectItem>
+                          <SelectItem value="MUY_ALTA">Muy alta</SelectItem>
+                          <SelectItem value="ALTA">Alta</SelectItem>
+                          <SelectItem value="MEDIA">Media</SelectItem>
+                          <SelectItem value="BAJA">Baja</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -468,23 +468,15 @@ export function AdminDashboard() {
                     filteredIncidencias.map((incidencia) => (
                       <TableRow key={incidencia.id}>
                         <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                        <TableCell>{incidencia.titulo}</TableCell>
+                        <TableCell>{incidencia.descripcion}</TableCell>
                         <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                         <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico || "Sin asignar"}</TableCell>
-                        <TableCell>{incidencia.fechaCreacion}</TableCell>
+                        <TableCell>{incidencia.tecnico ? incidencia.tecnico.username : "Sin asignar"}</TableCell>
+                        <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button variant="ghost" size="icon" onClick={() => handleEditIncidencia(incidencia)}>
                               <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-red-500"
-                              onClick={() => handleDeleteConfirm(incidencia, "incidencia")}
-                            >
-                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
@@ -546,7 +538,7 @@ export function AdminDashboard() {
                         <TableCell>{incidencia.titulo}</TableCell>
                         <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                         <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico || "Sin asignar"}</TableCell>
+                        <TableCell>{incidencia.tecnico ? incidencia.tecnico.username : "Sin asignar"}</TableCell>
                         <TableCell>{incidencia.fechaCreacion}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
@@ -623,10 +615,10 @@ export function AdminDashboard() {
                       <TableRow key={usuario.id}>
                         <TableCell className="font-medium">#{usuario.id}</TableCell>
                         <TableCell>{usuario.nombre}</TableCell>
-                        <TableCell>{usuario.apellidos}</TableCell>
-                        <TableCell>{usuario.email}</TableCell>
-                        <TableCell>{usuario.telefono}</TableCell>
-                        <TableCell>{getRolBadge(usuario.tipo)}</TableCell>
+                        <TableCell>{usuario.apellido}</TableCell>
+                        <TableCell>{usuario.correo}</TableCell>
+                        <TableCell>{usuario.tlfno}</TableCell>
+                        <TableCell>{getRolBadge(usuario.tipoUsuario)}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
                             <Button variant="ghost" size="icon" onClick={() => handleEditUsuario(usuario)}>
@@ -659,35 +651,13 @@ export function AdminDashboard() {
       </Tabs>
 
       {/* Diálogos */}
-      <CrearIncidenciaDialog
-        open={crearIncidenciaOpen}
-        onOpenChange={setCrearIncidenciaOpen}
-        onSave={handleSaveIncidencia}
-        tecnicos={mockTecnicos}
-      />
-
-      <EditarIncidenciaDialog
-        open={editarIncidenciaOpen}
-        onOpenChange={setEditarIncidenciaOpen}
-        incidencia={currentItem}
-        onSave={handleSaveIncidencia}
-        tecnicos={mockTecnicos}
-      />
-
+       
       <EditarUsuarioDialog
         open={editarUsuarioOpen}
         onOpenChange={setEditarUsuarioOpen}
         usuario={currentItem}
         onSave={handleSaveUsuario}
-        tiposUsuario={["admin", "tecnico", "gestor", "usuario"]}
-      />
-
-      <ConfirmDialog
-        open={eliminarDialogOpen}
-        onOpenChange={setEliminarDialogOpen}
-        title={`Eliminar ${itemType === "incidencia" ? "incidencia" : "usuario"}`}
-        description={`¿Estás seguro de que deseas eliminar ${itemType === "incidencia" ? "esta incidencia" : "este usuario"}? Esta acción no se puede deshacer.`}
-        onConfirm={confirmDelete}
+        tiposUsuario={["ADMINISTRADOR", "TECNICO", "GESTOR", "USUARIO_BASICO"]}
       />
     </div>
   )

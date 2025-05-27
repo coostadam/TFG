@@ -51,9 +51,8 @@ public class GestorServices {
 
     @POST
     @Path("/asignarTecnico/{idIncidencia}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response asignarTecnico(@PathParam("idIncidencia") Long idIncidencia, TecnicoDTOResolverIncidencia tecnicoDTO, @Context HttpServletRequest request) {
+    public Response asignarTecnico(@PathParam("idIncidencia") Long idIncidencia, @Context HttpServletRequest request) {
         Gestor g = (Gestor) request.getSession().getAttribute("usuario");
 
         if (g == null) {
@@ -71,16 +70,16 @@ public class GestorServices {
                         .entity("Incidencia no encontrada")
                         .build();
             }
+            
+            List<Tecnico> disponibles = gdi.getTecnicos();
 
-            Tecnico tecnico = udi.getTecnico(tecnicoDTO.getUsername());
-
-            if (tecnico == null) {
+            if (disponibles.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Técnico no encontrado")
+                        .entity("No hay técnicos disponibles")
                         .build();
             }
 
-            boolean result = gdi.asigTecnico(tecnico, i, asig);
+            boolean result = gdi.asigTecnico(disponibles, i, asig);
 
             if (result) {
                 return Response.ok("Técnico asignado correctamente.").build();
@@ -95,37 +94,4 @@ public class GestorServices {
             return Response.serverError().entity("Error interno del servidor.").build();
         }
     }
-
-    @GET
-    @Path("/getTecnicos")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getTecnicos(@Context HttpServletRequest request) {
-        Gestor g = (Gestor) request.getSession().getAttribute("usuario");
-
-        if (g == null) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity("No autenticado")
-                    .build();
-        }
-
-        try (GestorDAOimpl gdi = new GestorDAOimpl();) {
-            List<Tecnico> disponibles = gdi.getTecnicos();
-            List<TecnicoDTO> result = disponibles.stream()
-                    .filter(u -> u instanceof Tecnico)
-                    .map(u -> new TecnicoDTO((Tecnico) u))
-                    .collect(Collectors.toList());
-
-            if (true) {
-                return Response.ok(result).build();
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Error al asignar el tecnico")
-                        .build();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity("Error interno del servidor.").build();
-        }
-    }
-
 }

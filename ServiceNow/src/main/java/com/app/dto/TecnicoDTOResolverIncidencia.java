@@ -13,8 +13,6 @@ public class TecnicoDTOResolverIncidencia {
     public TecnicoDTOResolverIncidencia(Tecnico tec) {
         this.username = tec.getUsuario();
     }
-    
-    
 
     public String getUsername() {
         return username;

@@ -10,9 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CrearIncidenciaDialog } from "@/components/crear-incidencia-dialog"
 import { ResolverIncidenciaDialog } from "@/components/resolver-incidencia-dialog"
-import { mockIncidencias } from "@/lib/mock-data"
 
 interface Incidencia {
   id: number
@@ -29,7 +27,6 @@ interface Incidencia {
   }
 }
 
-
 export function TecnicoDashboard() {
   const [activeTab, setActiveTab] = useState("asignadas")
   const [searchQuery, setSearchQuery] = useState("")
@@ -42,7 +39,6 @@ export function TecnicoDashboard() {
   })
 
   // Diálogos
-  const [crearIncidenciaOpen, setCrearIncidenciaOpen] = useState(false)
   const [resolverIncidenciaOpen, setResolverIncidenciaOpen] = useState(false)
   const [currentIncidencia, setCurrentIncidencia] = useState(null)
 
@@ -210,9 +206,6 @@ useEffect(() => {
           <h1 className="text-2xl font-bold tracking-tight">Panel de Técnico</h1>
           <p className="text-muted-foreground">Gestiona las incidencias asignadas a ti.</p>
         </div>
-        <Button onClick={() => setCrearIncidenciaOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Nueva Incidencia
-        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -265,7 +258,6 @@ useEffect(() => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <TabsList>
             <TabsTrigger value="asignadas">Incidencias Asignadas</TabsTrigger>
-            <TabsTrigger value="propias">Mis Incidencias</TabsTrigger>
           </TabsList>
 
           <div className="flex items-center space-x-2">
@@ -295,8 +287,8 @@ useEffect(() => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
                         <SelectItem value="ASIGNADA">Asignada</SelectItem>
-                        <SelectItem value="EN_ESPERA">En espera</SelectItem>
                         <SelectItem value="CERRADA_EXITO">Cerrada</SelectItem>
                       </SelectContent>
                     </Select>

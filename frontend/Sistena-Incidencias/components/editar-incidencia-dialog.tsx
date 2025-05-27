@@ -17,17 +17,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export function EditarIncidenciaDialog({ open, onOpenChange, incidencia, onSave, tecnicos = [], isGestor = false }) {
   const [titulo, setTitulo] = useState("")
-  const [descripcion, setDescripcion] = useState("")
   const [prioridad, setPrioridad] = useState("")
   const [estado, setEstado] = useState("")
   const [tecnico, setTecnico] = useState("")
 
   useEffect(() => {
     if (incidencia) {
-      setTitulo(incidencia.titulo || "")
-      setDescripcion(incidencia.descripcion || "")
-      setPrioridad(incidencia.prioridad || "Media")
-      setEstado(incidencia.estado || "Abierta")
+      setTitulo(incidencia.descripcion || "")
+      setPrioridad(incidencia.prioridad || "")
+      setEstado(incidencia.estado || "")
       setTecnico(incidencia.tecnico || "")
     }
   }, [incidencia])
@@ -36,11 +34,7 @@ export function EditarIncidenciaDialog({ open, onOpenChange, incidencia, onSave,
     e.preventDefault()
 
     const incidenciaData = {
-      titulo,
-      descripcion,
-      prioridad,
-      estado,
-      tecnico: tecnico || null,
+      tecnico: tecnico === "no-asignado" ? null : tecnico,
     }
 
     onSave(incidenciaData)
@@ -53,63 +47,54 @@ export function EditarIncidenciaDialog({ open, onOpenChange, incidencia, onSave,
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Editar Incidencia #{incidencia.id}</DialogTitle>
-          <DialogDescription>Modifica los detalles de la incidencia.</DialogDescription>
+          <DialogDescription>Solo puedes cambiar el técnico asignado.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="titulo">Título</Label>
-              <Input id="titulo" value={titulo} onChange={(e) => setTitulo(e.target.value)} required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="descripcion">Descripción</Label>
-              <Textarea
-                id="descripcion"
-                value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}
-                required
-                rows={4}
-              />
+              <Input id="titulo" value={titulo} disabled />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="prioridad">Prioridad</Label>
-                <Select value={prioridad} onValueChange={setPrioridad} required>
+                <Select value={prioridad} onValueChange={setPrioridad} disabled>
                   <SelectTrigger id="prioridad">
                     <SelectValue placeholder="Selecciona la prioridad" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Alta">Alta</SelectItem>
-                    <SelectItem value="Media">Media</SelectItem>
-                    <SelectItem value="Baja">Baja</SelectItem>
+                    <SelectItem value="MUY_ALTA">Muy alta</SelectItem>
+                    <SelectItem value="ALTA">Alta</SelectItem>
+                    <SelectItem value="MEDIA">Media</SelectItem>
+                    <SelectItem value="BAJA">Baja</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="estado">Estado</Label>
-                <Select value={estado} onValueChange={setEstado} required>
+                <Select value={estado} onValueChange={setEstado} disabled>
                   <SelectTrigger id="estado">
                     <SelectValue placeholder="Selecciona el estado" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Abierta">Abierta</SelectItem>
-                    <SelectItem value="En proceso">En proceso</SelectItem>
-                    <SelectItem value="Cerrada">Cerrada</SelectItem>
+                    <SelectItem value="ALTA">Alta</SelectItem>
+                    <SelectItem value="ASIGNADA">Asignada</SelectItem>
+                    <SelectItem value="CERRADA_EXITO">Cerrada</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-            {(isGestor || !isGestor) && tecnicos.length > 0 && (
+            {tecnicos.length > 0 && (
               <div className="grid gap-2">
                 <Label htmlFor="tecnico">Técnico Asignado</Label>
-                <Select value={tecnico} onValueChange={setTecnico}>
+                <Select value={tecnico || "no-asignado"} onValueChange={setTecnico}>
                   <SelectTrigger id="tecnico">
                     <SelectValue placeholder="Selecciona un técnico" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="no-asignado">Sin asignar</SelectItem>
-                    {tecnicos.map((tec, index) => (
-                      <SelectItem key={index} value={tec.email}>
+                    {tecnicos.map((tec) => (
+                      <SelectItem key={tec.correo} value={tec.correo}>
                         {tec.nombre} {tec.apellido}
                       </SelectItem>
                     ))}

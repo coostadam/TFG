@@ -35,7 +35,7 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout>
-      {userRole === "admin" && <AdminDashboard />}
+      {userRole === "administrador" && <AdminDashboard />}
       {userRole === "tecnico" && <TecnicoDashboard />}
       {userRole === "gestor" && <GestorDashboard />}
       {userRole === "usuario_basico" && <UsuarioDashboard />}

@@ -119,10 +119,11 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
 
                 System.out.println("Incidencia actualizada correctamente.");
 
-                Query query = session.createQuery("UPDATE Incidencia i SET i.estado = :estado, i.administrador = :admin WHERE i.id = :id");
+                Query query = session.createQuery("UPDATE Incidencia i SET i.estado = :estado, i.administrador = :admin WHERE i.id = :id AND estado = :estadoOld");
                 query.setParameter("estado", EstadoIncidencia.EN_ESPERA);
                 query.setParameter("admin", admin);
                 query.setParameter("id", id);
+                query.setParameter("estadoOld", EstadoIncidencia.ALTA);
 
                 query.executeUpdate();
                 transaction.commit();

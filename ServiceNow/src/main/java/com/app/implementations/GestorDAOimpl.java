@@ -9,11 +9,13 @@ import com.app.pojo.TipoIncidencia;
 import com.app.pojo.TipoUsuario;
 import com.app.utils.HibernateUtil;
 import jakarta.persistence.Query;
+import static java.lang.Math.random;
 import java.sql.Date;
 import java.time.LocalDate;
 import org.hibernate.Session;
 
 import java.util.List;
+import java.util.Random;
 import org.hibernate.Transaction;
 
 public class GestorDAOimpl implements GestorDAO, AutoCloseable {
@@ -26,9 +28,9 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
 
     @Override
     public List<Incidencia> getIncidenciasIfEspera() {
-        return session.createQuery("SELECT i FROM Incidencia i WHERE i.estado = :estado", Incidencia.class)
-                .setParameter("estado", EstadoIncidencia.ALTA)
-                .getResultList();
+        return session.createQuery("SELECT i FROM Incidencia i WHERE i.estado IN (:estados)", Incidencia.class)
+              .setParameterList("estados", List.of(EstadoIncidencia.ALTA, EstadoIncidencia.EN_ESPERA))
+              .getResultList();
     }
 
     @Override
@@ -91,10 +93,14 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
     }
 
     @Override
-    public boolean asigTecnico(Tecnico tecnico, Incidencia i, Gestor gest) {      
+    public boolean asigTecnico(List<Tecnico> tecnicos, Incidencia i, Gestor gest) {      
         Transaction transaction = null;
 
         try {
+            Random random = new Random();
+            int indiceAleatorio = random.nextInt(tecnicos.size()); 
+            Tecnico tecnico = tecnicos.get(indiceAleatorio);
+            
             transaction = session.beginTransaction();
 
             Query query = session.createQuery(
@@ -128,7 +134,7 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
 
     @Override
     public List<Tecnico> getTecnicos() {
-        return session.createQuery("SELECT u FROM Usuario u WHERE tipoUsuario = :tipo", Tecnico.class)
+        return session.createQuery("SELECT u FROM Tecnico u", Tecnico.class)
                 .getResultList();
     }
 

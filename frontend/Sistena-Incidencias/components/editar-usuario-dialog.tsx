@@ -16,20 +16,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export function EditarUsuarioDialog({ open, onOpenChange, usuario, onSave, tiposUsuario = [] }) {
   const [nombre, setNombre] = useState("")
-  const [apellidos, setApellidos] = useState("")
-  const [email, setEmail] = useState("")
-  const [telefono, setTelefono] = useState("")
-  const [direccion, setDireccion] = useState("")
-  const [tipo, setTipo] = useState("")
+  const [apellido, setApellidos] = useState("")
+  const [correo, setEmail] = useState("")
+  const [tlfno, setTelefono] = useState("")
+  const [tipoUsuario, setTipo] = useState("")
 
   useEffect(() => {
     if (usuario) {
       setNombre(usuario.nombre || "")
-      setApellidos(usuario.apellidos || "")
-      setEmail(usuario.email || "")
-      setTelefono(usuario.telefono || "")
-      setDireccion(usuario.direccion || "")
-      setTipo(usuario.tipo || "")
+      setApellidos(usuario.apellido || "")
+      setEmail(usuario.correo || "")
+      setTelefono(usuario.tlfno || "")
+      setTipo(usuario.tipoUsuario || "")
     }
   }, [usuario])
 
@@ -38,11 +36,10 @@ export function EditarUsuarioDialog({ open, onOpenChange, usuario, onSave, tipos
 
     const usuarioData = {
       nombre,
-      apellidos,
-      email,
-      telefono,
-      direccion,
-      tipo,
+      apellido,
+      correo,
+      tlfno,
+      tipoUsuario,
     }
 
     onSave(usuarioData)
@@ -74,24 +71,20 @@ export function EditarUsuarioDialog({ open, onOpenChange, usuario, onSave, tipos
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="apellidos">Apellidos</Label>
-                <Input id="apellidos" value={apellidos} onChange={(e) => setApellidos(e.target.value)} required />
+                <Input id="apellidos" value={apellido} onChange={(e) => setApellidos(e.target.value)} required />
               </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input id="email" type="email" value={correo} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="telefono">Teléfono</Label>
-              <Input id="telefono" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="direccion">Dirección</Label>
-              <Input id="direccion" value={direccion} onChange={(e) => setDireccion(e.target.value)} required />
+              <Input id="telefono" value={tlfno} onChange={(e) => setTelefono(e.target.value)} required />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="tipo">Rol del Usuario</Label>
-              <Select value={tipo} onValueChange={setTipo} required>
+              <Select value={tipoUsuario} onValueChange={setTipo} required>
                 <SelectTrigger id="tipo">
                   <SelectValue placeholder="Selecciona el rol de usuario" />
                 </SelectTrigger>

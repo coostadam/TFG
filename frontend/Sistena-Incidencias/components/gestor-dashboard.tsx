@@ -19,6 +19,7 @@ export function GestorDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [incidencias, setIncidencias] = useState([])
   const [filteredIncidencias, setFilteredIncidencias] = useState([])
+  const [tecnicos, setTecnicos] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" })
   const [filters, setFilters] = useState({
     estado: "",
@@ -31,7 +32,7 @@ export function GestorDashboard() {
   const [currentIncidencia, setCurrentIncidencia] = useState(null)
 
   useEffect(() => {
-     const fetchIncidencias = async () => {
+    const fetchIncidencias = async () => {
       try {
         const response = await fetch("http://localhost:8080/ServiceNow/resources/gestor/incidencia", {
           method: "GET",
@@ -55,16 +56,47 @@ export function GestorDashboard() {
     fetchIncidencias();
   }, [])
 
+  const handleSaveIncidencia = async (incidenciaData) => {
+    try {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/gestor/asignarTecnico/${incidenciaData.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al asignar técnico: ${errorText}`);
+      }
+
+      const data = await response.text();
+      console.log("Técnico asignado:", data);
+
+      setIncidencias(prevIncidencias =>
+      prevIncidencias.filter(inc => inc.id !== incidenciaData.id)
+    );
+
+    } catch (error) {
+      console.error("Error al guardar incidencia:", error);
+    }
+
+    
+    setEditarIncidenciaOpen(false);
+    setCrearIncidenciaOpen(false);
+    setCurrentIncidencia(null);
+  };
+
+
   useEffect(() => {
-    // Filtrar incidencias según la pestaña activa y la búsqueda
     let filtered = [...incidencias]
 
-    // Aplicar filtros de estado y prioridad
-    if (filters.estado) {
+    if (filters.estado && filters.estado !== "all") {
       filtered = filtered.filter((inc) => inc.estado === filters.estado)
     }
 
-    if (filters.prioridad) {
+    if (filters.prioridad && filters.prioridad !== "all") {
       filtered = filtered.filter((inc) => inc.prioridad === filters.prioridad)
     }
 
@@ -100,31 +132,6 @@ export function GestorDashboard() {
     setSortConfig({ key, direction })
   }
 
-  const handleEditIncidencia = (incidencia) => {
-    setCurrentIncidencia(incidencia)
-    setEditarIncidenciaOpen(true)
-  }
-
-  const handleSaveIncidencia = (incidenciaData) => {
-    if (currentIncidencia) {
-      // Editar incidencia existente
-      setIncidencias(incidencias.map((inc) => (inc.id === currentIncidencia.id ? { ...inc, ...incidenciaData } : inc)))
-    } else {
-      // Crear nueva incidencia
-      const newIncidencia = {
-        id: Math.max(...incidencias.map((inc) => inc.id)) + 1,
-        creador: "gestor@example.com",
-        gestor: "gestor@example.com",
-        fechaCreacion: new Date().toISOString().split("T")[0],
-        ...incidenciaData,
-      }
-      setIncidencias([...incidencias, newIncidencia])
-    }
-    setEditarIncidenciaOpen(false)
-    setCrearIncidenciaOpen(false)
-    setCurrentIncidencia(null)
-  }
-
   const resetFilters = () => {
     setFilters({
       estado: "",
@@ -135,7 +142,7 @@ export function GestorDashboard() {
   }
 
   const getEstadoBadge = (estado) => {
-   switch (estado) {
+    switch (estado) {
       case "ALTA":
         return (
           <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">
@@ -190,14 +197,6 @@ export function GestorDashboard() {
           <h1 className="text-2xl font-bold tracking-tight">Panel de Gestor</h1>
           <p className="text-muted-foreground">Gestiona y asigna incidencias a técnicos.</p>
         </div>
-        <Button
-          onClick={() => {
-            setCurrentIncidencia(null)
-            setCrearIncidenciaOpen(true)
-          }}
-        >
-          <Plus className="mr-2 h-4 w-4" /> Nueva Incidencia
-        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
@@ -229,7 +228,6 @@ export function GestorDashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
           <TabsList>
             <TabsTrigger value="asignadas">Incidencias Gestionadas</TabsTrigger>
-            <TabsTrigger value="propias">Mis Incidencias</TabsTrigger>
           </TabsList>
 
           <div className="flex items-center space-x-2">
@@ -259,8 +257,8 @@ export function GestorDashboard() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
                         <SelectItem value="ASIGNADA">Asignada</SelectItem>
-                        <SelectItem value="EN_ESPERA">En espera</SelectItem>
                         <SelectItem value="CERRADA_EXITO">Cerrada</SelectItem>
                       </SelectContent>
                     </Select>
@@ -338,7 +336,7 @@ export function GestorDashboard() {
                         <TableCell>{incidencia.tecnico?.username || "Sin asignar"}</TableCell>
                         <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => handleEditIncidencia(incidencia)}>
+                          <Button variant="ghost" size="icon" onClick={() => handleSaveIncidencia(incidencia)}>
                             <Edit className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -418,19 +416,13 @@ export function GestorDashboard() {
       </Tabs>
 
       {/* Diálogos */}
-      <CrearIncidenciaDialog
-        open={crearIncidenciaOpen}
-        onOpenChange={setCrearIncidenciaOpen}
-        onSave={handleSaveIncidencia}
-        tecnicos={mockTecnicos}
-      />
 
       <EditarIncidenciaDialog
         open={editarIncidenciaOpen}
         onOpenChange={setEditarIncidenciaOpen}
         incidencia={currentIncidencia}
         onSave={handleSaveIncidencia}
-        tecnicos={mockTecnicos}
+        tecnicos={tecnicos}
         isGestor={true}
       />
     </div>
