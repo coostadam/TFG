@@ -90,6 +90,7 @@ export function CrearIncidenciaDialog({
                   <SelectItem value="Alta">Alta</SelectItem>
                   <SelectItem value="Media">Media</SelectItem>
                   <SelectItem value="Baja">Baja</SelectItem>
+                  <SelectItem value="Muy Alta">Muy Alta</SelectItem>
                 </SelectContent>
               </Select>
             </div>
