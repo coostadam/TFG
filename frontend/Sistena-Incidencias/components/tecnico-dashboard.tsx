@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ResolverIncidenciaDialog } from "@/components/resolver-incidencia-dialog"
+import { CrearTipoIncidenciaDialog } from "@/components/CrearTipoIncidenciaDialog"
 
 interface Incidencia {
   id: number
@@ -41,6 +42,7 @@ export function TecnicoDashboard() {
   // Diálogos
   const [resolverIncidenciaOpen, setResolverIncidenciaOpen] = useState(false)
   const [currentIncidencia, setCurrentIncidencia] = useState(null)
+  const [crearTipoIncidenciaOpen, setCrearTipoIncidenciaOpen] = useState(false)
 
   useEffect(() => {
     const fetchIncidencias = async () => {
@@ -65,41 +67,41 @@ export function TecnicoDashboard() {
     fetchIncidencias();
   }, [])
 
-useEffect(() => {
-  // Filtrar incidencias según la pestaña activa y la búsqueda
-  let filtered = [...incidencias]
+  useEffect(() => {
+    // Filtrar incidencias según la pestaña activa y la búsqueda
+    let filtered = [...incidencias]
 
-  if (filters.estado && filters.estado !== "all") {
-    filtered = filtered.filter((inc) => inc.estado === filters.estado)
-  }
+    if (filters.estado && filters.estado !== "all") {
+      filtered = filtered.filter((inc) => inc.estado === filters.estado)
+    }
 
-  if (filters.prioridad && filters.prioridad !== "all") {
-    filtered = filtered.filter((inc) => inc.prioridad === filters.prioridad)
-  }
+    if (filters.prioridad && filters.prioridad !== "all") {
+      filtered = filtered.filter((inc) => inc.prioridad === filters.prioridad)
+    }
 
-  // Aplicar búsqueda
-  if (searchQuery) {
-    filtered = filtered.filter(
-      (inc) =>
-        inc.descripcion.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
-    )
-  }
+    // Aplicar búsqueda
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (inc) =>
+          inc.descripcion.toLowerCase().includes(searchQuery.toLowerCase()) || inc.id.toString().includes(searchQuery),
+      )
+    }
 
-  // Aplicar ordenamiento
-  if (sortConfig.key) {
-    filtered.sort((a, b) => {
-      if (a[sortConfig.key] < b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? -1 : 1
-      }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
-        return sortConfig.direction === "asc" ? 1 : -1
-      }
-      return 0
-    })
-  }
+    // Aplicar ordenamiento
+    if (sortConfig.key) {
+      filtered.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? -1 : 1
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === "asc" ? 1 : -1
+        }
+        return 0
+      })
+    }
 
-  setFilteredIncidencias(filtered)
-}, [incidencias, activeTab, searchQuery, sortConfig, filters])
+    setFilteredIncidencias(filtered)
+  }, [incidencias, activeTab, searchQuery, sortConfig, filters])
 
   const handleSort = (key) => {
     let direction = "asc"
@@ -115,29 +117,55 @@ useEffect(() => {
   }
 
   const handleResolverGuardar = async (resolucion) => {
-  try {
-    const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ solucion: resolucion })  
-    });
+    try {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ solucion: resolucion })
+      });
 
-    if (response.ok) {
-      setCurrentIncidencia(null);
-      window.location.reload();
-    } else {
-      const errorText = await response.text();
-      console.error("Error al cerrar incidencia:", errorText);
-      alert("No se pudo cerrar la incidencia: " + errorText);
+      if (response.ok) {
+        setCurrentIncidencia(null);
+        window.location.reload();
+      } else {
+        const errorText = await response.text();
+        console.error("Error al cerrar incidencia:", errorText);
+        alert("No se pudo cerrar la incidencia: " + errorText);
+      }
+    } catch (error) {
+      console.error("Error de red al cerrar incidencia:", error);
+      alert("Error de red al cerrar la incidencia");
     }
-  } catch (error) {
-    console.error("Error de red al cerrar incidencia:", error);
-    alert("Error de red al cerrar la incidencia");
-  }
-};
+  };
+
+  const handleGuardarTipoIncidencia = async (nuevoTipo) => {
+    try {
+      const tipoNormalizado = nuevoTipo.nombre.trim().replace(/\s+/g, ' ');
+      const tipoUrl = encodeURIComponent(tipoNormalizado);
+
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/addTipo/${tipoUrl}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nuevoTipo),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        alert("Error al guardar: " + errorText);
+        return;
+      }
+
+      alert("Tipo de incidencia creado correctamente");
+      setCrearTipoIncidenciaOpen(false);
+
+    } catch (error) {
+      alert("Error de red: " + error.message);
+    }
+  };
 
   const resetFilters = () => {
     setFilters({
@@ -196,8 +224,6 @@ useEffect(() => {
 
   const incidenciasAsignadas = incidencias.filter((inc) => inc.tecnico.username === localStorage.getItem("userEmail"))
   const incidenciasAbiertas = incidenciasAsignadas.filter((inc) => inc.estado !== "CERRADA_EXITO")
-  
-  
 
   return (
     <div className="space-y-6">
@@ -206,6 +232,9 @@ useEffect(() => {
           <h1 className="text-2xl font-bold tracking-tight">Panel de Técnico</h1>
           <p className="text-muted-foreground">Gestiona las incidencias asignadas a ti.</p>
         </div>
+        <Button onClick={() => setCrearTipoIncidenciaOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />  Añadir Tipo Incidencia
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -367,7 +396,7 @@ useEffect(() => {
                         <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
                           {incidencia.estado !== "CERRADA_EXITO" && (
-                            <Button  variant="outline" size="sm" onClick={() => handleResolverIncidencia(incidencia)}>
+                            <Button variant="outline" size="sm" onClick={() => handleResolverIncidencia(incidencia)}>
                               Resolver
                             </Button>
                           )}
@@ -453,6 +482,13 @@ useEffect(() => {
         incidencia={currentIncidencia}
         onSave={handleResolverGuardar}
       />
+
+      <CrearTipoIncidenciaDialog
+        open={crearTipoIncidenciaOpen}
+        onOpenChange={setCrearTipoIncidenciaOpen}
+        onSave={handleGuardarTipoIncidencia}
+      />
+
     </div>
   )
 }

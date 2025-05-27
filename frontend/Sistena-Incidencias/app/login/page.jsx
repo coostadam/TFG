@@ -108,6 +108,11 @@ export default function LoginPage() {
         data = null;
       }
 
+      if (!res.ok) {
+        alert("Inicio de sesióin incorrecto.");
+        return; 
+      }
+
       if (res.ok) {
 
         if (!data) {
@@ -166,7 +171,7 @@ export default function LoginPage() {
       }
 
       alert("Registro exitoso. Ya puedes iniciar sesión.")
-      // Limpiar campos...
+
       setNombre("")
       setApellidos("")
       setTelefono("")
@@ -216,212 +221,212 @@ export default function LoginPage() {
                     />
                   </div>
                 </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Contraseña</Label>
-                  <a href="#" className="text-sm text-blue-600 hover:underline">
-                    ¿Olvidaste tu contraseña?
-                  </a>
-                </div>
-                <div className="relative">
-                  <LockKeyhole className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    className="pl-10"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              {loginError && <div className="text-red-500 text-sm">{loginError}</div>}
-
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                Iniciar Sesión
-              </Button>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="registro">
-            <form onSubmit={handleRegistro} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nombre">Nombre</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                    <Input
-                      id="nombre"
-                      type="text"
-                      placeholder="Tu nombre"
-                      className="pl-10"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                      required
-                    />
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">Contraseña</Label>
+                    <a href="#" className="text-sm text-blue-600 hover:underline">
+                      ¿Olvidaste tu contraseña?
+                    </a>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="apellidos">Apellidos</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                    <Input
-                      id="apellidos"
-                      type="text"
-                      placeholder="Tus apellidos"
-                      className="pl-10"
-                      value={apellidos}
-                      onChange={(e) => setApellidos(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="telefono">Teléfono</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                  <Input
-                    id="telefono"
-                    type="tel"
-                    placeholder="600123456"
-                    className="pl-10"
-                    value={telefono}
-                    onChange={(e) => setTelefono(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="usuario">Nombre de Usuario</Label>
-                <div className="relative">
-                  <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                  <Input
-                    id="usuario"
-                    type="text"
-                    placeholder="usuario123"
-                    className="pl-10"
-                    value={usuario}
-                    onChange={(e) => setUsuario(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="direccion">Dirección</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                  <Input
-                    id="direccion"
-                    type="text"
-                    placeholder="Tu dirección"
-                    className="pl-10"
-                    value={direccion}
-                    onChange={(e) => setDireccion(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="emailRegistro">Correo Electrónico</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
-                  <Input
-                    id="emailRegistro"
-                    type="email"
-                    placeholder="correo@ejemplo.com"
-                    className="pl-10"
-                    value={emailRegistro}
-                    onChange={(e) => setEmailRegistro(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="passwordRegistro">Contraseña</Label>
                   <div className="relative">
                     <LockKeyhole className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
                     <Input
-                      id="passwordRegistro"
+                      id="password"
                       type="password"
                       placeholder="••••••••"
                       className="pl-10"
-                      value={passwordRegistro}
-                      onChange={(e) => setPasswordRegistro(e.target.value)}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                     />
                   </div>
                 </div>
+
+                {loginError && <div className="text-red-500 text-sm">{loginError}</div>}
+
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                  Iniciar Sesión
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="registro">
+              <form onSubmit={handleRegistro} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nombre">Nombre</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                      <Input
+                        id="nombre"
+                        type="text"
+                        placeholder="Tu nombre"
+                        className="pl-10"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="apellidos">Apellidos</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                      <Input
+                        id="apellidos"
+                        type="text"
+                        placeholder="Tus apellidos"
+                        className="pl-10"
+                        value={apellidos}
+                        onChange={(e) => setApellidos(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                  <Label htmlFor="telefono">Teléfono</Label>
                   <div className="relative">
-                    <LockKeyhole className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
                     <Input
-                      id="confirmPassword"
-                      type="password"
-                      placeholder="••••••••"
+                      id="telefono"
+                      type="tel"
+                      placeholder="600123456"
                       className="pl-10"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      value={telefono}
+                      onChange={(e) => setTelefono(e.target.value)}
                       required
                     />
                   </div>
                 </div>
-              </div>
 
-              {registroError && <div className="text-red-500 text-sm">{registroError}</div>}
-
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-                Registrarse
-              </Button>
-            </form>
-          </TabsContent>
-
-          <TabsContent value="demo">
-            <div className="space-y-4">
-              <div className="text-sm text-gray-500 mb-2">
-                Utiliza estas cuentas para probar las diferentes vistas del sistema:
-              </div>
-              {[
-                { role: "Administrador", email: "admin@example.com" },
-                { role: "Técnico", email: "tecnico@example.com" },
-                { role: "Gestor", email: "gestor@example.com" },
-                { role: "Usuario Básico", email: "usuario@example.com" },
-              ].map((account, index) => (
-                <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                  <div className="font-medium">{account.role}</div>
-                  <div className="text-sm text-gray-500 flex justify-between">
-                    <span>{account.email}</span>
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-blue-600"
-                      onClick={() => {
-                        setEmail(account.email)
-                        setPassword("password")
-                      }}
-                    >
-                      Usar esta cuenta
-                    </Button>
+                <div className="space-y-2">
+                  <Label htmlFor="usuario">Nombre de Usuario</Label>
+                  <div className="relative">
+                    <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                    <Input
+                      id="usuario"
+                      type="text"
+                      placeholder="usuario123"
+                      className="pl-10"
+                      value={usuario}
+                      onChange={(e) => setUsuario(e.target.value)}
+                      required
+                    />
                   </div>
                 </div>
-              ))}
-              <div className="text-xs text-gray-500 mt-2">Contraseña para todas las cuentas: "password"</div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-      <CardFooter className="flex justify-center border-t pt-4">
-        <p className="text-sm text-gray-500">© 2025 Sistema de Gestión de Incidencias</p>
-      </CardFooter>
-    </Card>
+
+                <div className="space-y-2">
+                  <Label htmlFor="direccion">Dirección</Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                    <Input
+                      id="direccion"
+                      type="text"
+                      placeholder="Tu dirección"
+                      className="pl-10"
+                      value={direccion}
+                      onChange={(e) => setDireccion(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="emailRegistro">Correo Electrónico</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                    <Input
+                      id="emailRegistro"
+                      type="email"
+                      placeholder="correo@ejemplo.com"
+                      className="pl-10"
+                      value={emailRegistro}
+                      onChange={(e) => setEmailRegistro(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="passwordRegistro">Contraseña</Label>
+                    <div className="relative">
+                      <LockKeyhole className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                      <Input
+                        id="passwordRegistro"
+                        type="password"
+                        placeholder="••••••••"
+                        className="pl-10"
+                        value={passwordRegistro}
+                        onChange={(e) => setPasswordRegistro(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
+                    <div className="relative">
+                      <LockKeyhole className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-4 w-4" />
+                      <Input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="••••••••"
+                        className="pl-10"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {registroError && <div className="text-red-500 text-sm">{registroError}</div>}
+
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                  Registrarse
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="demo">
+              <div className="space-y-4">
+                <div className="text-sm text-gray-500 mb-2">
+                  Utiliza estas cuentas para probar las diferentes vistas del sistema:
+                </div>
+                {[
+                  { role: "Administrador", email: "admin@example.com" },
+                  { role: "Técnico", email: "tecnico@example.com" },
+                  { role: "Gestor", email: "gestor@example.com" },
+                  { role: "Usuario Básico", email: "usuario@example.com" },
+                ].map((account, index) => (
+                  <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                    <div className="font-medium">{account.role}</div>
+                    <div className="text-sm text-gray-500 flex justify-between">
+                      <span>{account.email}</span>
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto text-blue-600"
+                        onClick={() => {
+                          setEmail(account.email)
+                          setPassword("password")
+                        }}
+                      >
+                        Usar esta cuenta
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                <div className="text-xs text-gray-500 mt-2">Contraseña para todas las cuentas: "password"</div>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+        <CardFooter className="flex justify-center border-t pt-4">
+          <p className="text-sm text-gray-500">© 2025 Sistema de Gestión de Incidencias</p>
+        </CardFooter>
+      </Card>
     </div >
   )
 }
