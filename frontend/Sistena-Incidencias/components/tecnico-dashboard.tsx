@@ -229,7 +229,7 @@ useEffect(() => {
           <CardContent>
             <div className="text-2xl font-bold">{incidenciasAbiertas.length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidenciasAbiertas.filter((inc) => inc.prioridad === "ALTA").length} de alta prioridad
+              {incidenciasAbiertas.filter((inc) => inc.prioridad === "MUY_ALTA").length} de muy alta prioridad
             </p>
           </CardContent>
         </Card>

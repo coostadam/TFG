@@ -34,10 +34,6 @@ export function ResolverIncidenciaDialog({ open, onOpenChange, incidencia, onSav
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <div className="text-sm font-medium">Título</div>
-              <div className="text-sm">{incidencia.titulo}</div>
-            </div>
-            <div className="grid gap-2">
               <div className="text-sm font-medium">Descripción</div>
               <div className="text-sm">{incidencia.descripcion}</div>
             </div>

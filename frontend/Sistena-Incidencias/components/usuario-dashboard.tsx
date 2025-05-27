@@ -196,7 +196,7 @@ export function UsuarioDashboard() {
     }
 
     fecthTipos();
-  });
+  }, []);
 
 
   return (
@@ -232,7 +232,7 @@ export function UsuarioDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "ALTA").length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidencias.filter((inc) => inc.estado === "ALTA" && inc.prioridad === "ALTA").length} de alta
+              {incidencias.filter((inc) => inc.estado === "ALTA" && inc.prioridad === "MUY_ALTA").length} de muy alta
               prioridad
             </p>
           </CardContent>

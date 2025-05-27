@@ -28,7 +28,6 @@ export function CrearIncidenciaDialog({
   const [descripcion, setDescripcion] = useState("")
   const [prioridad, setPrioridad] = useState("Media")
   const [tecnico, setTecnico] = useState("")
-  const [tipo, setTipo] = useState("")
   const [tipoSeleccionado, setTipoSeleccionado] = useState("")
 
   const handleSubmit = (e) => {
@@ -60,12 +59,12 @@ export function CrearIncidenciaDialog({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="titulo">Título</Label>
+              <Label htmlFor="nombreDispositivo">Nombre dispositivo</Label>
               <Input
                 id="titulo"
                 value={titulo}
                 onChange={(e) => setTitulo(e.target.value)}
-                placeholder="Ej: Error en el sistema de login"
+                placeholder="Ej: Impresora HP 400"
                 required
               />
             </div>
@@ -90,7 +89,7 @@ export function CrearIncidenciaDialog({
                   <SelectItem value="Alta">Alta</SelectItem>
                   <SelectItem value="Media">Media</SelectItem>
                   <SelectItem value="Baja">Baja</SelectItem>
-                  <SelectItem value="Muy Alta">Muy Alta</SelectItem>
+                  <SelectItem value="Muy_Alta">Muy Alta</SelectItem>
                 </SelectContent>
               </Select>
             </div>

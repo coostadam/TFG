@@ -208,7 +208,7 @@ export function GestorDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{incidenciasPendientes.length}</div>
             <p className="text-xs text-muted-foreground">
-              {incidenciasPendientes.filter((inc) => inc.prioridad === "ALTA").length} de alta prioridad
+              {incidenciasPendientes.filter((inc) => inc.prioridad === "MUY_ALTA").length} de muy alta prioridad
             </p>
           </CardContent>
         </Card>
