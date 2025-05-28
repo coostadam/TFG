@@ -36,7 +36,6 @@ public class UsuarioBasicoDAOimpl implements UsuarioBasicoDAO, AutoCloseable{
                 .setParameter("id", id)
                 .getSingleResult();
     }
-
     
     @Override
     public boolean reabrirIncidencia(Incidencia i) {

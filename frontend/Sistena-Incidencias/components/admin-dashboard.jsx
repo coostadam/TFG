@@ -49,7 +49,7 @@ export function AdminDashboard() {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/admin/allIncidencias", {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/admin/allIncidencias", {
           method: "GET",
           credentials: "include",
         });
@@ -70,7 +70,7 @@ export function AdminDashboard() {
 
     const fetchUsuarios = async () => {
       try {
-        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/admin/allUsers", {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/admin/allUsers", {
           method: "GET",
           credentials: "include",
         });
@@ -173,7 +173,7 @@ export function AdminDashboard() {
     setCurrentItem(incidencia);
 
     try {
-      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/admin/incidenciaEspera/${incidencia.id}`, {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/incidenciaEspera/${incidencia.id}`, {
         method: "POST",
         credentials: "include",
       });
@@ -194,7 +194,7 @@ export function AdminDashboard() {
     if (!confirmado) return
 
     try {
-      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/admin/deleteUser/${usuario.usuario}`, {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/deleteUser/${usuario.usuario}`, {
         method: "POST",
         credentials: "include",
       })
@@ -213,20 +213,40 @@ export function AdminDashboard() {
     }
   }
 
-  const handleSaveUsuario = (usuarioData) => {
+  const handleSaveUsuario = async (usuarioData) => {
     if (currentItem) {
-      // Editar usuario existente
-      const usuariosActualizados = usuarios.map((user) =>
-        user.id === currentItem.id ? { ...user, ...usuarioData } : user,
-      )
+      try {
+        const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/changeRol/${currentItem.usuario}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            rol: usuarioData.tipoUsuario,
+          }),
+          credentials: "include", 
+        });
 
-      // Guardar en localStorage
-      localStorage.setItem("usuarios", JSON.stringify(usuariosActualizados))
-      setUsuarios(usuariosActualizados)
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText || "Error al cambiar el rol");
+        }
+
+        const usuariosActualizados = usuarios.map((user) =>
+          user.usuario === currentItem.usuario ? { ...user, tipoUsuario: usuarioData.tipoUsuario } : user
+        );
+        setUsuarios(usuariosActualizados);
+
+      } catch (error) {
+        console.error("Error al cambiar el rol:", error);
+        alert("No se pudo cambiar el rol: " + error.message);
+      }
     }
-    setEditarUsuarioOpen(false)
-    setCurrentItem(null)
-  }
+
+    setEditarUsuarioOpen(false);
+    setCurrentItem(null);
+  };
+
 
   const resetFilters = () => {
     setFilters({

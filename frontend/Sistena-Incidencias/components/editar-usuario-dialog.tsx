@@ -67,16 +67,16 @@ export function EditarUsuarioDialog({ open, onOpenChange, usuario, onSave, tipos
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="nombre">Nombre</Label>
-                <Input id="nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                <Input id="nombre" value={nombre} disabled  />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="apellidos">Apellidos</Label>
-                <Input id="apellidos" value={apellido} onChange={(e) => setApellidos(e.target.value)} required />
+                <Input id="apellidos" value={apellido} disabled  />
               </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={correo} onChange={(e) => setEmail(e.target.value)} required />
+              <Input id="email" type="email" value={correo} disabled  />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="telefono">Teléfono</Label>

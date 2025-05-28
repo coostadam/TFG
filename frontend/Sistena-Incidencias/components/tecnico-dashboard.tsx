@@ -47,7 +47,7 @@ export function TecnicoDashboard() {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/tecnico/incidencias/misIncidencias", {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/tecnico/incidencias/misIncidencias", {
           method: "GET",
           credentials: "include",
         });
@@ -117,7 +117,7 @@ export function TecnicoDashboard() {
 
   const handleResolverGuardar = async (resolucion) => {
     try {
-      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -145,7 +145,7 @@ export function TecnicoDashboard() {
       const tipoNormalizado = nuevoTipo.nombre.trim().replace(/\s+/g, ' ');
       const tipoUrl = encodeURIComponent(tipoNormalizado);
 
-      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/tecnico/addTipo/${tipoUrl}`, {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/addTipo/${tipoUrl}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevoTipo),

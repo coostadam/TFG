@@ -29,7 +29,7 @@ export function GestorDashboard() {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/gestor/incidencia", {
+        const response = await fetch("http://localhost:8080/ServiceNow/resources/gestor/incidencia", {
           method: "GET",
           credentials: "include",
         });
@@ -53,7 +53,7 @@ export function GestorDashboard() {
 
   const handleSaveIncidencia = async (incidenciaData) => {
     try {
-      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/gestor/asignarTecnico/${incidenciaData.id}`, {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/gestor/asignarTecnico/${incidenciaData.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
