@@ -112,7 +112,9 @@ public class AdministradorServices {
             Incidencia i = tdi.getIncidenciaById(id);
             boolean res = adi.asigAdmin(a, i);
             if (res) {
-                return Response.ok().build();
+                i = tdi.getIncidenciaById(id);
+                IncidenciaDTO dto = new IncidenciaDTO(i);
+                return Response.ok(dto).build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("No se pudo cerrar la incidencia")

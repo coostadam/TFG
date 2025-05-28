@@ -21,9 +21,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { EditarUsuarioDialog } from "@/components/editar-usuario-dialog"
+import { MoreVertical } from 'lucide-react'
 
 
 export function AdminDashboard() {
@@ -169,26 +170,6 @@ export function AdminDashboard() {
     setEditarUsuarioOpen(true)
   }
 
-  const handleEditIncidencia = async (incidencia) => {
-    setCurrentItem(incidencia);
-
-    try {
-      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/incidenciaEspera/${incidencia.id}`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al obtener usuarios");
-      }
-
-      window.location.reload();
-
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleDeleteConfirm = async (usuario) => {
     const confirmado = window.confirm(`¿Estás seguro de que quieres eliminar al usuario ${usuario.usuario}?`)
     if (!confirmado) return
@@ -224,7 +205,7 @@ export function AdminDashboard() {
           body: JSON.stringify({
             rol: usuarioData.tipoUsuario,
           }),
-          credentials: "include", 
+          credentials: "include",
         });
 
         if (!response.ok) {
@@ -247,6 +228,59 @@ export function AdminDashboard() {
     setCurrentItem(null);
   };
 
+  async function handleAsignarme(incidencia) {
+    console.log(incidencia)
+
+    try {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/asigAdmin/${incidencia.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        alert('Incidencia asignada correctamente');
+      } else if (response.status === 401) {
+        alert('No estás autenticado');
+      } else {
+        const errorText = await response.text();
+        alert('Error al asignar incidencia: ' + errorText);
+      }
+    } catch (error) {
+      alert('Error de red o servidor: ' + error.message);
+    }
+  }
+
+  const handlePonerEnEspera = async (incidencia) => {
+    if (incidencia.estado !== "ALTA") {
+      alert(`No se puede modificar el estado de la incidencia. Estado actual: ${incidencia.estado}`);
+      return; 
+    }
+
+    setCurrentItem(incidencia);
+
+    try {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/incidenciaEspera/${incidencia.id}`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al poner incidencia en espera");
+      }
+
+      setIncidencias((current) =>
+        current.map((i) =>
+          i.id === incidencia.id ? { ...i, estado: "EN_ESPERA" } : i
+        )
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const resetFilters = () => {
     setFilters({
@@ -477,8 +511,8 @@ export function AdminDashboard() {
                       </Button>
                     </TableHead>
                     <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("titulo")}>
-                        Título {sortConfig.key === "titulo" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("descripcion")}>
+                        Título {sortConfig.key === "descripcion" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                       </Button>
                     </TableHead>
                     <TableHead>
@@ -512,9 +546,22 @@ export function AdminDashboard() {
                         <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => handleEditIncidencia(incidencia)}>
-                              <Edit className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleAsignarme(incidencia)}
+                                >
+                                  Asignarme
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handlePonerEnEspera(incidencia)}>
+                                  Poner en espera
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </TableCell>
                       </TableRow>

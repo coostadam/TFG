@@ -360,8 +360,8 @@ export function TecnicoDashboard() {
                       </Button>
                     </TableHead>
                     <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("titulo")}>
-                        Título {sortConfig.key === "titulo" && (sortConfig.direction === "asc" ? "↑" : "↓")}
+                       <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("descripcion")}>
+                        Título {sortConfig.key === "descripcion" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                       </Button>
                     </TableHead>
                     <TableHead>

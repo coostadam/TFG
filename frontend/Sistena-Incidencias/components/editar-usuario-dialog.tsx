@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export function EditarUsuarioDialog({ open, onOpenChange, usuario, onSave, tiposUsuario = [] }) {
   const [nombre, setNombre] = useState("")
   const [apellido, setApellidos] = useState("")
+  const [user, setUsuario] = useState("")
   const [correo, setEmail] = useState("")
   const [tlfno, setTelefono] = useState("")
   const [tipoUsuario, setTipo] = useState("")
@@ -25,6 +26,7 @@ export function EditarUsuarioDialog({ open, onOpenChange, usuario, onSave, tipos
     if (usuario) {
       setNombre(usuario.nombre || "")
       setApellidos(usuario.apellido || "")
+      setUsuario(usuario.usuario || "")
       setEmail(usuario.correo || "")
       setTelefono(usuario.tlfno || "")
       setTipo(usuario.tipoUsuario || "")
@@ -79,8 +81,12 @@ export function EditarUsuarioDialog({ open, onOpenChange, usuario, onSave, tipos
               <Input id="email" type="email" value={correo} disabled  />
             </div>
             <div className="grid gap-2">
+              <Label htmlFor="usuario">Nombre de usuario</Label>
+              <Input id="usuario" value={user} disabled  />
+            </div>
+            <div className="grid gap-2">
               <Label htmlFor="telefono">Teléfono</Label>
-              <Input id="telefono" value={tlfno} onChange={(e) => setTelefono(e.target.value)} required />
+              <Input id="telefono" value={tlfno} onChange={(e) => setTelefono(e.target.value)} disabled />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="tipo">Rol del Usuario</Label>
