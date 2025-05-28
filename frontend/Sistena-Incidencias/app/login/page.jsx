@@ -13,7 +13,6 @@ export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [loginError, setLoginError] = useState("")
   const [error, setError] = useState("")
 
 
@@ -87,10 +86,9 @@ export default function LoginPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
-      const res = await fetch("http://localhost:8080/ServiceNow/resources/auth/log", {
+      const res = await fetch("http://192.168.1.147:8080/ServiceNow/resources/auth/log", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,9 +107,11 @@ export default function LoginPage() {
       }
 
       if (!res.ok) {
-        alert("Inicio de sesióin incorrecto.");
-        return; 
+        alert("Inicio de sesión incorrecto.")
+        return;
       }
+
+      setError("");
 
       if (res.ok) {
 
@@ -145,7 +145,7 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/ServiceNow/resources/auth/registro", {
+      const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/auth/registro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -200,10 +200,9 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-4">
+            <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
               <TabsTrigger value="registro">Crear Cuenta</TabsTrigger>
-              <TabsTrigger value="demo">Cuentas Demo</TabsTrigger>
             </TabsList>
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
@@ -242,7 +241,11 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {loginError && <div className="text-red-500 text-sm">{loginError}</div>}
+                {error && (
+                  <div className="text-red-600 bg-red-100 p-2 rounded mt-2" id="error-msg">
+                    {error}
+                  </div>
+                )}
 
                 <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
                   Iniciar Sesión
@@ -388,38 +391,6 @@ export default function LoginPage() {
                   Registrarse
                 </Button>
               </form>
-            </TabsContent>
-
-            <TabsContent value="demo">
-              <div className="space-y-4">
-                <div className="text-sm text-gray-500 mb-2">
-                  Utiliza estas cuentas para probar las diferentes vistas del sistema:
-                </div>
-                {[
-                  { role: "Administrador", email: "admin@example.com" },
-                  { role: "Técnico", email: "tecnico@example.com" },
-                  { role: "Gestor", email: "gestor@example.com" },
-                  { role: "Usuario Básico", email: "usuario@example.com" },
-                ].map((account, index) => (
-                  <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                    <div className="font-medium">{account.role}</div>
-                    <div className="text-sm text-gray-500 flex justify-between">
-                      <span>{account.email}</span>
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto text-blue-600"
-                        onClick={() => {
-                          setEmail(account.email)
-                          setPassword("password")
-                        }}
-                      >
-                        Usar esta cuenta
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                <div className="text-xs text-gray-500 mt-2">Contraseña para todas las cuentas: "password"</div>
-              </div>
             </TabsContent>
           </Tabs>
         </CardContent>

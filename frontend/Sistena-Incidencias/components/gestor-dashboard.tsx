@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { AlertCircle, CheckCircle, Clock, Edit, Filter, Plus, RefreshCw, Search, Users } from "lucide-react"
+import { AlertCircle, CheckCircle, Clock, Edit, Filter, RefreshCw, Search, UserCheck, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -10,16 +10,13 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CrearIncidenciaDialog } from "@/components/crear-incidencia-dialog"
-import { EditarIncidenciaDialog } from "@/components/editar-incidencia-dialog"
-import { mockIncidencias, mockTecnicos } from "@/lib/mock-data"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function GestorDashboard() {
   const [activeTab, setActiveTab] = useState("asignadas")
   const [searchQuery, setSearchQuery] = useState("")
   const [incidencias, setIncidencias] = useState([])
   const [filteredIncidencias, setFilteredIncidencias] = useState([])
-  const [tecnicos, setTecnicos] = useState([])
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" })
   const [filters, setFilters] = useState({
     estado: "",
@@ -27,14 +24,12 @@ export function GestorDashboard() {
   })
 
   // Diálogos
-  const [crearIncidenciaOpen, setCrearIncidenciaOpen] = useState(false)
-  const [editarIncidenciaOpen, setEditarIncidenciaOpen] = useState(false)
   const [currentIncidencia, setCurrentIncidencia] = useState(null)
 
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://localhost:8080/ServiceNow/resources/gestor/incidencia", {
+        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/gestor/incidencia", {
           method: "GET",
           credentials: "include",
         });
@@ -58,7 +53,7 @@ export function GestorDashboard() {
 
   const handleSaveIncidencia = async (incidenciaData) => {
     try {
-      const response = await fetch(`http://localhost:8080/ServiceNow/resources/gestor/asignarTecnico/${incidenciaData.id}`, {
+      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/gestor/asignarTecnico/${incidenciaData.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,16 +70,13 @@ export function GestorDashboard() {
       console.log("Técnico asignado:", data);
 
       setIncidencias(prevIncidencias =>
-      prevIncidencias.filter(inc => inc.id !== incidenciaData.id)
-    );
+        prevIncidencias.filter(inc => inc.id !== incidenciaData.id)
+      );
 
     } catch (error) {
       console.error("Error al guardar incidencia:", error);
     }
 
-    
-    setEditarIncidenciaOpen(false);
-    setCrearIncidenciaOpen(false);
     setCurrentIncidencia(null);
   };
 
@@ -316,7 +308,7 @@ export function GestorDashboard() {
                         Prioridad {sortConfig.key === "prioridad" && (sortConfig.direction === "asc" ? "↑" : "↓")}
                       </Button>
                     </TableHead>
-                    <TableHead>Técnico Asignado</TableHead>
+                    <TableHead>Usuario</TableHead>
                     <TableHead>
                       <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("fechaCreacion")}>
                         Fecha {sortConfig.key === "fechaCreacion" && (sortConfig.direction === "asc" ? "↑" : "↓")}
@@ -333,12 +325,25 @@ export function GestorDashboard() {
                         <TableCell>{incidencia.descripcion}</TableCell>
                         <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                         <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico?.username || "Sin asignar"}</TableCell>
+                        <TableCell>{incidencia.usuario.username}</TableCell>
                         <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="icon" onClick={() => handleSaveIncidencia(incidencia)}>
-                            <Edit className="h-4 w-4" />
-                          </Button>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleSaveIncidencia(incidencia)}
+                                >
+                                  <UserPlus className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p className="text-xs">Asignar técnico</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </TableCell>
                       </TableRow>
                     ))
@@ -354,77 +359,7 @@ export function GestorDashboard() {
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="propias" className="space-y-4">
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[80px]">
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("id")}>
-                        ID {sortConfig.key === "id" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("titulo")}>
-                        Título {sortConfig.key === "titulo" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("estado")}>
-                        Estado {sortConfig.key === "estado" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("prioridad")}>
-                        Prioridad {sortConfig.key === "prioridad" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>Técnico Asignado</TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("fechaCreacion")}>
-                        Fecha {sortConfig.key === "fechaCreacion" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredIncidencias.length > 0 ? (
-                    filteredIncidencias.map((incidencia) => (
-                      <TableRow key={incidencia.id}>
-                        <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                        <TableCell>{incidencia.titulo}</TableCell>
-                        <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
-                        <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico || "Sin asignar"}</TableCell>
-                        <TableCell>{incidencia.fechaCreacion}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
-                        No has creado ninguna incidencia
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
       </Tabs>
-
-      {/* Diálogos */}
-
-      <EditarIncidenciaDialog
-        open={editarIncidenciaOpen}
-        onOpenChange={setEditarIncidenciaOpen}
-        incidencia={currentIncidencia}
-        onSave={handleSaveIncidencia}
-        tecnicos={tecnicos}
-        isGestor={true}
-      />
     </div>
   )
 }

@@ -47,7 +47,7 @@ export function TecnicoDashboard() {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://localhost:8080/ServiceNow/resources/tecnico/incidencias/misIncidencias", {
+        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/tecnico/incidencias/misIncidencias", {
           method: "GET",
           credentials: "include",
         });
@@ -117,7 +117,7 @@ export function TecnicoDashboard() {
 
   const handleResolverGuardar = async (resolucion) => {
     try {
-      const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
+      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/tecnico/cerrarIncidencia/${currentIncidencia.id}`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -145,7 +145,7 @@ export function TecnicoDashboard() {
       const tipoNormalizado = nuevoTipo.nombre.trim().replace(/\s+/g, ' ');
       const tipoUrl = encodeURIComponent(tipoNormalizado);
 
-      const response = await fetch(`http://localhost:8080/ServiceNow/resources/tecnico/addTipo/${tipoUrl}`, {
+      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/tecnico/addTipo/${tipoUrl}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(nuevoTipo),
@@ -406,65 +406,6 @@ export function TecnicoDashboard() {
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-4 text-muted-foreground">
                         No se encontraron incidencias asignadas
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="propias" className="space-y-4">
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[80px]">
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("id")}>
-                        ID {sortConfig.key === "id" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("titulo")}>
-                        Título {sortConfig.key === "titulo" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("estado")}>
-                        Estado {sortConfig.key === "estado" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("prioridad")}>
-                        Prioridad {sortConfig.key === "prioridad" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>Técnico Asignado</TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("fechaCreacion")}>
-                        Fecha {sortConfig.key === "fechaCreacion" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredIncidencias.length > 0 ? (
-                    filteredIncidencias.map((incidencia) => (
-                      <TableRow key={incidencia.id}>
-                        <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                        <TableCell>{incidencia.descripcion}</TableCell>
-                        <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
-                        <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico.username || "Sin asignar"}</TableCell>
-                        <TableCell>{incidencia.fechaCreacion.replace(/Z$/, "")}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-4 text-muted-foreground">
-                        No has creado ninguna incidencia
                       </TableCell>
                     </TableRow>
                   )}

@@ -8,7 +8,6 @@ import {
   Clock,
   Edit,
   Filter,
-  Plus,
   RefreshCw,
   Search,
   Trash2,
@@ -24,11 +23,8 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CrearIncidenciaDialog } from "@/components/crear-incidencia-dialog"
-import { EditarIncidenciaDialog } from "@/components/editar-incidencia-dialog"
 import { EditarUsuarioDialog } from "@/components/editar-usuario-dialog"
-import { ConfirmDialog } from "@/components/confirm-dialog"
-import { mockIncidencias, mockTecnicos } from "@/lib/mock-data"
+
 
 export function AdminDashboard() {
   const searchParams = useSearchParams()
@@ -53,7 +49,7 @@ export function AdminDashboard() {
   useEffect(() => {
     const fetchIncidencias = async () => {
       try {
-        const response = await fetch("http://localhost:8080/ServiceNow/resources/admin/allIncidencias", {
+        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/admin/allIncidencias", {
           method: "GET",
           credentials: "include",
         });
@@ -74,7 +70,7 @@ export function AdminDashboard() {
 
     const fetchUsuarios = async () => {
       try {
-        const response = await fetch("http://localhost:8080/ServiceNow/resources/admin/allUsers", {
+        const response = await fetch("http://192.168.1.147:8080/ServiceNow/resources/admin/allUsers", {
           method: "GET",
           credentials: "include",
         });
@@ -177,7 +173,7 @@ export function AdminDashboard() {
     setCurrentItem(incidencia);
 
     try {
-      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/incidenciaEspera/${incidencia.id}`, {
+      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/admin/incidenciaEspera/${incidencia.id}`, {
         method: "POST",
         credentials: "include",
       });
@@ -198,7 +194,7 @@ export function AdminDashboard() {
     if (!confirmado) return
 
     try {
-      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/deleteUser/${usuario.usuario}`, {
+      const response = await fetch(`http://192.168.1.147:8080/ServiceNow/resources/admin/deleteUser/${usuario.usuario}`, {
         method: "POST",
         credentials: "include",
       })
@@ -216,8 +212,6 @@ export function AdminDashboard() {
       alert("Error al conectar con el servidor.")
     }
   }
-
-
 
   const handleSaveUsuario = (usuarioData) => {
     if (currentItem) {
@@ -509,73 +503,6 @@ export function AdminDashboard() {
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-4 text-muted-foreground">
                         No se encontraron incidencias
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="propias" className="space-y-4">
-          <Card>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[80px]">
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("id")}>
-                        ID {sortConfig.key === "id" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("titulo")}>
-                        Título {sortConfig.key === "titulo" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("estado")}>
-                        Estado {sortConfig.key === "estado" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("prioridad")}>
-                        Prioridad {sortConfig.key === "prioridad" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead>Técnico Asignado</TableHead>
-                    <TableHead>
-                      <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("fechaCreacion")}>
-                        Fecha {sortConfig.key === "fechaCreacion" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                      </Button>
-                    </TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredIncidencias.length > 0 ? (
-                    filteredIncidencias.map((incidencia) => (
-                      <TableRow key={incidencia.id}>
-                        <TableCell className="font-medium">#{incidencia.id}</TableCell>
-                        <TableCell>{incidencia.titulo}</TableCell>
-                        <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
-                        <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>
-                        <TableCell>{incidencia.tecnico ? incidencia.tecnico.username : "Sin asignar"}</TableCell>
-                        <TableCell>{incidencia.fechaCreacion}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="icon" onClick={() => handleEditIncidencia(incidencia)}>
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-4 text-muted-foreground">
-                        No has creado ninguna incidencia
                       </TableCell>
                     </TableRow>
                   )}
