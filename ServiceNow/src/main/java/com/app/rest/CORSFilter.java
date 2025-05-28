@@ -13,7 +13,10 @@ import java.util.List;
 public class CORSFilter implements ContainerResponseFilter {
 
     private static final List<String> allowedOrigins = Arrays.asList(
-            "http://localhost:3000"
+            "http://localhost:3000",
+            "http://192.168.1.135:3000",
+            "http://192.168.1.139:3000",
+            "http://192.168.1.147:3000"
     );
 
     @Override

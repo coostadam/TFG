@@ -67,8 +67,7 @@ export function TecnicoDashboard() {
     fetchIncidencias();
   }, [])
 
-  useEffect(() => {
-    // Filtrar incidencias según la pestaña activa y la búsqueda
+   useEffect(() => {
     let filtered = [...incidencias]
 
     if (filters.estado && filters.estado !== "all") {

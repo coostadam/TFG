@@ -67,4 +67,8 @@ public class AddTestDatos {
             ex.printStackTrace();
         }
     }
+    
+    public static void main(String[] args) {
+        addDatos();
+    }
 }

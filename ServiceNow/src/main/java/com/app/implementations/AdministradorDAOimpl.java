@@ -76,34 +76,6 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
     }
 
     @Override
-    public List<Incidencia> getIncidenciasByUser(UsuarioBasico usuario) {
-        return session.createQuery("SELECT i FROM Incidencia i WHERE i.usuario = :usuario", Incidencia.class)
-                .setParameter("usuario", usuario)
-                .getResultList();
-    }
-
-    @Override
-    public List<Incidencia> getIncidenciasByGestor(Gestor gestor) {
-        return session.createQuery("SELECT i FROM Incidencia i WHERE i.gestor = :gestor", Incidencia.class)
-                .setParameter("gestor", gestor)
-                .getResultList();
-    }
-
-    @Override
-    public List<Incidencia> getIncidenciasByTecnico(Tecnico tecnico) {
-        return session.createQuery("SELECT i FROM Incidencia i WHERE i.tecnico = :tecnico", Incidencia.class)
-                .setParameter("tecnico", tecnico)
-                .getResultList();
-    }
-
-    @Override
-    public List<Incidencia> getIncidenciasByTipo(TipoIncidencia tipo) {
-        return session.createQuery("SELECT i FROM Incidencia i WHERE i.tipo = :tipo", Incidencia.class)
-                .setParameter("tipo", tipo)
-                .getResultList();
-    }
-
-    @Override
     public List<Incidencia> getAllIncidencias() {
         return session.createQuery("SELECT i FROM Incidencia i", Incidencia.class)
                 .getResultList();
@@ -196,6 +168,32 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
             int result = query.executeUpdate();
 
             if (result > 0) {
+                transaction.commit();
+                return true;
+            } else {
+                transaction.rollback();
+                return false;
+            }
+
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteUser(Usuario u) {
+        Transaction transaction = null;
+        try {
+            transaction = session.beginTransaction();
+
+            Usuario usuarioToDelete = session.get(Usuario.class, u.getId());
+
+            if (usuarioToDelete != null) {
+                session.delete(usuarioToDelete);
                 transaction.commit();
                 return true;
             } else {

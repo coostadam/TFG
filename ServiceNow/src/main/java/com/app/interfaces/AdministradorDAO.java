@@ -12,18 +12,12 @@ public interface AdministradorDAO {
     boolean cerrarIncidencia(long id,  String solucion, Administrador admin) throws Exception;
     
     boolean ponerIncidenciaEspera(long id, Administrador admin);
-
-    List<Incidencia>  getIncidenciasByUser(UsuarioBasico usuario);
-
-    List<Incidencia>  getIncidenciasByGestor(Gestor gestor);
-
-    List<Incidencia>  getIncidenciasByTecnico(Tecnico tecnico);
-
-    List<Incidencia>  getIncidenciasByTipo(TipoIncidencia tipo);
     
     List<Incidencia> getAllIncidencias();
     
     boolean asigAdmin(Administrador a, Incidencia i);
     
     boolean changeRolUser(Usuario user, String rol);
+    
+    boolean deleteUser(Usuario u);
 }

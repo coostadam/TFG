@@ -49,16 +49,14 @@ export function UsuarioDashboard() {
   }, []);
 
 
-  useEffect(() => {
-    // Filtrar incidencias según la búsqueda y filtros
+   useEffect(() => {
     let filtered = [...incidencias]
 
-    // Aplicar filtros de estado y prioridad
-    if (filters.estado) {
+    if (filters.estado && filters.estado !== "all") {
       filtered = filtered.filter((inc) => inc.estado === filters.estado)
     }
 
-    if (filters.prioridad) {
+    if (filters.prioridad && filters.prioridad !== "all") {
       filtered = filtered.filter((inc) => inc.prioridad === filters.prioridad)
     }
 

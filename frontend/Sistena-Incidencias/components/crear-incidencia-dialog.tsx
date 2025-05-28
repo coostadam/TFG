@@ -86,10 +86,10 @@ export function CrearIncidenciaDialog({
                   <SelectValue placeholder="Selecciona la prioridad" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="Muy_Alta">Muy Alta</SelectItem>
                   <SelectItem value="Alta">Alta</SelectItem>
                   <SelectItem value="Media">Media</SelectItem>
                   <SelectItem value="Baja">Baja</SelectItem>
-                  <SelectItem value="Muy_Alta">Muy Alta</SelectItem>
                 </SelectContent>
               </Select>
             </div>

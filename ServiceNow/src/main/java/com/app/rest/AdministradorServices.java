@@ -145,12 +145,46 @@ public class AdministradorServices {
             }
 
             boolean res = adi.changeRolUser(targetUser, rolDto.getRol());
-            
+
             if (res) {
                 return Response.ok().build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("No se pudo cambiar el rol")
+                        .build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.serverError().build();
+        }
+    }
+
+    @POST
+    @Path("/deleteUser/{username}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response borrarUser(@PathParam("username") String user, @Context HttpServletRequest request) {
+        Administrador a = (Administrador) request.getSession().getAttribute("usuario");
+        if (a == null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("No autenticado")
+                    .build();
+        }
+
+        try (AdministradorDAOimpl adi = new AdministradorDAOimpl(); UtilDAOimpl udi = new UtilDAOimpl()) {
+            Usuario targetUser = udi.getUsuario(user);
+            if (targetUser == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Usuario no encontrado")
+                        .build();
+            }
+
+            boolean res = adi.deleteUser(targetUser);
+
+            if (res) {
+                return Response.ok().build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("No se pudo borrar el usuario")
                         .build();
             }
         } catch (Exception e) {

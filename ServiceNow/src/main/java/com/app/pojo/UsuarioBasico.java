@@ -13,7 +13,7 @@ public class UsuarioBasico extends Usuario {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario; 
     
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario",cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Incidencia> incidencias = new HashSet<>();
 
     public UsuarioBasico(String usuario, String nombre, String apellido, String correo, String tlfno, String password, TipoUsuario tipoUsuario) {

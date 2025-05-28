@@ -47,8 +47,6 @@ export function AdminDashboard() {
   })
 
   // Diálogos
-  const [crearIncidenciaOpen, setCrearIncidenciaOpen] = useState(false)
-  const [editarIncidenciaOpen, setEditarIncidenciaOpen] = useState(false)
   const [editarUsuarioOpen, setEditarUsuarioOpen] = useState(false)
   const [currentItem, setCurrentItem] = useState(null)
 
@@ -194,6 +192,31 @@ export function AdminDashboard() {
       console.error(error);
     }
   };
+
+  const handleDeleteConfirm = async (usuario) => {
+    const confirmado = window.confirm(`¿Estás seguro de que quieres eliminar al usuario ${usuario.usuario}?`)
+    if (!confirmado) return
+
+    try {
+      const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/deleteUser/${usuario.usuario}`, {
+        method: "POST",
+        credentials: "include",
+      })
+
+      if (response.ok) {
+        alert("Usuario eliminado correctamente.")
+        setUsuarios((prevUsuarios) => prevUsuarios.filter((u) => u.usuario !== usuario.usuario))
+        window.location.reload();
+      } else {
+        const error = await response.text()
+        alert(`Error al eliminar el usuario: ${error}`)
+      }
+    } catch (error) {
+      console.error("Error en la eliminación:", error)
+      alert("Error al conectar con el servidor.")
+    }
+  }
+
 
 
   const handleSaveUsuario = (usuarioData) => {
@@ -545,14 +568,6 @@ export function AdminDashboard() {
                             <Button variant="ghost" size="icon" onClick={() => handleEditIncidencia(incidencia)}>
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-red-500"
-                              onClick={() => handleDeleteConfirm(incidencia, "incidencia")}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -628,7 +643,7 @@ export function AdminDashboard() {
                               variant="ghost"
                               size="icon"
                               className="text-red-500"
-                              onClick={() => handleDeleteConfirm(usuario, "usuario")}
+                              onClick={() => handleDeleteConfirm(usuario)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -651,7 +666,7 @@ export function AdminDashboard() {
       </Tabs>
 
       {/* Diálogos */}
-       
+
       <EditarUsuarioDialog
         open={editarUsuarioOpen}
         onOpenChange={setEditarUsuarioOpen}
