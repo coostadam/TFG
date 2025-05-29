@@ -133,6 +133,8 @@ export default function LoginPage() {
         return
       }
 
+      console.log(data)
+
       localStorage.setItem("userRole", data.rol.toLowerCase())
       localStorage.setItem("userEmail", data.usuario)
       localStorage.setItem("userName", data.nombre)
@@ -414,7 +416,7 @@ export default function LoginPage() {
           </Tabs>
         </CardContent>
         <CardFooter className="text-center text-xs text-muted-foreground">
-          &copy; 2023 Tu Compañía. Todos los derechos reservados.
+          &copy; 2025 Service Now. Todos los derechos reservados.
         </CardFooter>
       </Card>
     </div>

@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 export function DashboardLayout({ children }) {
   const router = useRouter()
-  const [userRole, setUserRole] = useState(null)
+  const [userRole, setUserRole] = useState("")
   const [userEmail, setUserEmail] = useState("")
   const [userName, setUserName] = useState("")
 
@@ -44,10 +44,10 @@ export function DashboardLayout({ children }) {
   }
 
   const roleLabels = {
-    admin: "Administrador",
+    administrador: "Administrador",
     tecnico: "Técnico",
     gestor: "Gestor",
-    usuario: "Usuario",
+    usuario_basico: "Usuario Básico",
   }
 
   const getInitials = (name) => {
@@ -89,7 +89,7 @@ export function DashboardLayout({ children }) {
                   </Avatar>
                   <div className="hidden md:block text-sm font-medium text-left">
                     <div>{userName || userEmail}</div>
-                    <div className="text-xs text-muted-foreground">{roleLabels[userRole]}</div>
+                    <div className="text-xs text-muted-foreground">{roleLabels[userRole] ?? "Rol desconocido"}</div>
                   </div>
                   <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 </Button>
