@@ -10,7 +10,7 @@ import { UsuarioDashboard } from "@/components/usuario-dashboard"
 
 export default function DashboardPage() {
   const router = useRouter()
-  const [userRole, setUserRole] = useState(null)
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

@@ -97,7 +97,7 @@ export default function LoginPage() {
     }
   }, [])
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     try {
@@ -148,7 +148,7 @@ export default function LoginPage() {
     }
   }
 
-  const handleRegistro = async (e) => {
+  const handleRegistro = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setRegistroError("")
 

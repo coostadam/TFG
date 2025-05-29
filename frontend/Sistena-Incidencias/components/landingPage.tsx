@@ -3,6 +3,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 import { Ticket, Users, BarChart3, CheckCircle, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import ServiceNow from "@/components/assets/image/serviceNow.png"
 
 export default function Component() {
   return (
@@ -139,11 +140,12 @@ export default function Component() {
               </div>
               <div className="flex justify-center">
                 <Image
-                  src="/serviceNow.png?height=400&width=500"
+                  src={ServiceNow}
                   width={500}
                   height={400}
                   alt="Dashboard de TicketPro"
                   className="rounded-lg shadow-lg"
+                  loading="lazy"
                 />
               </div>
             </div>
