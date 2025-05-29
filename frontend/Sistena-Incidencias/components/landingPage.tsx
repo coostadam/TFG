@@ -139,7 +139,7 @@ export default function Component() {
               </div>
               <div className="flex justify-center">
                 <Image
-                  src="/placeholder.svg?height=400&width=500"
+                  src="/serviceNow.png?height=400&width=500"
                   width={500}
                   height={400}
                   alt="Dashboard de TicketPro"
