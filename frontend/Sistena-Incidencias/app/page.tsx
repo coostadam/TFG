@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation"
+import  Principal  from "@/components/landingPage"
 
 export default function Home() {
-  // Redirigir a la página de inicio de sesión
-  redirect("/login")
+  return(
+    <div className="flex flex-col justify-center items-center ">
+      <Principal />
+    </div>
+  )
 }
