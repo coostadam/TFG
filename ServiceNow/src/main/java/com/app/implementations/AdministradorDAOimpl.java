@@ -153,38 +153,6 @@ public class AdministradorDAOimpl implements AdministradorDAO, AutoCloseable {
     }
 
     @Override
-    public boolean changeRolUser(Usuario user, String rol) {
-        Transaction transaction = null;
-        TipoUsuario tipo = TipoUsuario.valueOf(rol.toUpperCase());
-        try {
-            transaction = session.beginTransaction();
-
-            Query query = session.createQuery(
-                    "UPDATE Usuario u SET u.tipoUsuario = :rol WHERE u.id = :id"
-            );
-            query.setParameter("rol", tipo);
-            query.setParameter("id", user.getId());
-
-            int result = query.executeUpdate();
-
-            if (result > 0) {
-                transaction.commit();
-                return true;
-            } else {
-                transaction.rollback();
-                return false;
-            }
-
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
     public boolean deleteUser(Usuario u) {
         Transaction transaction = null;
         try {

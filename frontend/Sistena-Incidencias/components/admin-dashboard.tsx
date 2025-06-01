@@ -171,6 +171,11 @@ export function AdminDashboard() {
   }
 
   const handleDeleteConfirm = async (usuario) => {
+    if (usuario.tipoUsuario !== "USUARIO_BASICO") {
+      alert("Solo se pueden borrar usuarios básicos.");
+      return;
+    }
+
     const confirmado = window.confirm(`¿Estás seguro de que quieres eliminar al usuario ${usuario.usuario}?`)
     if (!confirmado) return
 
@@ -196,6 +201,11 @@ export function AdminDashboard() {
 
   const handleSaveUsuario = async (usuarioData) => {
     if (currentItem) {
+      if (currentItem.tipoUsuario !== "USUARIO_BASICO") {
+        alert("Solo se puede cambiar el rol de usuarios que sean usuario básico.");
+        return;
+      }
+
       try {
         const response = await fetch(`http://localhost:8080/ServiceNow/resources/admin/changeRol/${currentItem.usuario}`, {
           method: "POST",
@@ -241,6 +251,7 @@ export function AdminDashboard() {
       });
 
       if (response.ok) {
+        window.location.reload();
         alert('Incidencia asignada correctamente');
       } else if (response.status === 401) {
         alert('No estás autenticado');
@@ -254,11 +265,6 @@ export function AdminDashboard() {
   }
 
   const handlePonerEnEspera = async (incidencia) => {
-    if (incidencia.estado !== "ALTA") {
-      alert(`No se puede modificar el estado de la incidencia. Estado actual: ${incidencia.estado}`);
-      return; 
-    }
-
     setCurrentItem(incidencia);
 
     try {
@@ -409,9 +415,9 @@ export function AdminDashboard() {
             <Clock className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "ASIGNADAS").length}</div>
+            <div className="text-2xl font-bold">{incidencias.filter((inc) => inc.estado === "ASIGNADA").length}</div>
             <p className="text-xs text-muted-foreground">
-              {Math.round((incidencias.filter((inc) => inc.estado === "ASIGNADAS").length / incidencias.length) * 100)}
+              {Math.round((incidencias.filter((inc) => inc.estado === "ASIGNADA").length / incidencias.length) * 100)}
               % del total
             </p>
           </CardContent>
@@ -553,11 +559,15 @@ export function AdminDashboard() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handleAsignarme(incidencia)}
+                                <DropdownMenuItem
+                                  onClick={() => handleAsignarme(incidencia)}
+                                  disabled={!!incidencia.administrador}
                                 >
                                   Asignarme
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handlePonerEnEspera(incidencia)}>
+                                <DropdownMenuItem 
+                                onClick={() => handlePonerEnEspera(incidencia)}
+                                disabled={incidencia.estado != "ALTA"}>
                                   Poner en espera
                                 </DropdownMenuItem>
                               </DropdownMenuContent>

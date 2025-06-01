@@ -16,8 +16,6 @@ public interface AdministradorDAO {
     List<Incidencia> getAllIncidencias();
     
     boolean asigAdmin(Administrador a, Incidencia i);
-    
-    boolean changeRolUser(Usuario user, String rol);
-    
+        
     boolean deleteUser(Usuario u);
 }

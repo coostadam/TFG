@@ -42,4 +42,6 @@ public interface UtilDAO {
     Tecnico getTecnicoById(long id);
     
     Administrador getAdmin(String user);
+    
+    String getPass(Usuario u);
 }

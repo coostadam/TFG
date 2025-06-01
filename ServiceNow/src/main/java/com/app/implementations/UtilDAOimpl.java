@@ -1,10 +1,10 @@
 package com.app.implementations;
 
 import com.app.pojo.*;
-import com.app.utils.HibernateUtil;
-import com.app.utils.Util;
 import org.hibernate.Session;
 import com.app.interfaces.UtilDAO;
+import com.app.utils.HibernateUtil;
+import com.app.utils.Util;
 import java.util.List;
 
 public class UtilDAOimpl implements UtilDAO, AutoCloseable {
@@ -159,6 +159,14 @@ public class UtilDAOimpl implements UtilDAO, AutoCloseable {
     public Administrador getAdmin(String user) {
         return session.createQuery("SELECT u FROM Usuario u WHERE u.usuario = :user", Administrador.class)
                 .setParameter("user", user)
+                .getSingleResult();
+    }
+    
+    
+    @Override
+    public String getPass(Usuario u) {
+        return session.createQuery("SELECT u.password FROM Usuario u WHERE u.usuario = :user", String.class)
+                .setParameter("user", u.getUsuario())
                 .getSingleResult();
     }
 

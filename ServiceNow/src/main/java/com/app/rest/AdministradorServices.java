@@ -7,8 +7,12 @@ import com.app.implementations.AdministradorDAOimpl;
 import com.app.implementations.TecnicoDAOimpl;
 import com.app.implementations.UtilDAOimpl;
 import com.app.pojo.Administrador;
+import com.app.pojo.Gestor;
 import com.app.pojo.Incidencia;
+import com.app.pojo.Tecnico;
+import com.app.pojo.TipoUsuario;
 import com.app.pojo.Usuario;
+import com.app.pojo.UsuarioBasico;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -146,15 +150,63 @@ public class AdministradorServices {
                         .build();
             }
 
-            boolean res = adi.changeRolUser(targetUser, rolDto.getRol());
+            String password = udi.getPass(targetUser);
+            String rol = rolDto.getRol().toUpperCase();
 
-            if (res) {
-                return Response.ok().build();
-            } else {
+            adi.deleteUser(targetUser);
+
+            Usuario nuevoUsuario;
+            switch (rol) {
+                case "TECNICO":
+                    nuevoUsuario = new Tecnico();
+                    break;
+                case "ADMINISTRADOR":
+                    nuevoUsuario = new Administrador();
+                    break;
+                case "GESTOR":
+                    nuevoUsuario = new Gestor();
+                    break;
+                case "USUARIO_BASICO":
+                    nuevoUsuario = new UsuarioBasico();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Rol inválido: " + rol);
+            }
+
+            if (nuevoUsuario == null) {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("No se pudo cambiar el rol")
+                        .entity("Rol inválido")
                         .build();
             }
+
+            nuevoUsuario.setUsuario(targetUser.getUsuario());
+            nuevoUsuario.setNombre(targetUser.getNombre());
+            nuevoUsuario.setApellido(targetUser.getApellido());
+            nuevoUsuario.setCorreo(targetUser.getCorreo());
+            nuevoUsuario.setTlfno(targetUser.getTlfno());
+            nuevoUsuario.setPassword(password);
+            nuevoUsuario.setTipoUsuario(TipoUsuario.valueOf(rol));
+
+            switch (rol) {
+                case "TECNICO":
+                    udi.addTecnico((Tecnico) nuevoUsuario);
+                    break;
+                case "ADMINISTRADOR":
+                    udi.addAdmin((Administrador) nuevoUsuario);
+                    break;
+                case "GESTOR":
+                    udi.addGestor((Gestor) nuevoUsuario);
+                    break;
+                case "USUARIO_BASICO":
+                    udi.addUsuarioBasico((UsuarioBasico) nuevoUsuario);
+                    break;
+                default:
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .entity("Rol inválido: " + rol)
+                            .build();
+            }
+
+            return Response.ok(new UsuarioDTO(nuevoUsuario)).build();
         } catch (Exception e) {
             e.printStackTrace();
             return Response.serverError().build();
