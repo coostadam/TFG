@@ -316,11 +316,8 @@ export function UsuarioDashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px]">
-                    <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("id")}>
-                      Nº {sortConfig.key === "id" && (sortConfig.direction === "asc" ? "↑" : "↓")}
-                    </Button>
-                  </TableHead>
+               
+
                   <TableHead>
                     <Button variant="ghost" className="p-0 font-medium" onClick={() => handleSort("descripcion")}>
                       Título {sortConfig.key === "descripcion" && (sortConfig.direction === "asc" ? "↑" : "↓")}
@@ -348,7 +345,6 @@ export function UsuarioDashboard() {
                 {filteredIncidencias.length > 0 ? (
                   filteredIncidencias.map((incidencia) => (
                     <TableRow key={incidencia.id}>
-                      <TableCell className="font-medium">{incidencia.id}</TableCell>
                       <TableCell>{incidencia.descripcion}</TableCell>
                       <TableCell>{getEstadoBadge(incidencia.estado)}</TableCell>
                       <TableCell>{getPrioridadBadge(incidencia.prioridad)}</TableCell>

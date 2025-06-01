@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class AddTestDatos {
 
+
     public static void addDatos() {
         try (UtilDAOimpl udi = new UtilDAOimpl()) {
             UsuarioBasico usuario1 = new UsuarioBasico("user01", "Carlos", "Pérez", "carlos@example.com", "123456789", Util.hashPassword("pass123"), TipoUsuario.USUARIO_BASICO);
