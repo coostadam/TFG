@@ -48,9 +48,11 @@ export default function Component() {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
+              <Link href="https://www.youtube.com/watch?v=OEgqOWGEGVE" target="_blank">
               <Button variant="outline" size="lg" className="h-12">
                 Ver Demo
               </Button>
+              </Link>
             </div>
             <p className="text-sm text-gray-500"> • ✓ Configuración en 5 minutos</p>
           </div>

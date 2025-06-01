@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Path("/gestor")
@@ -66,18 +67,22 @@ public class GestorServices {
                         .build();
             }
             
-            List<Tecnico> disponibles = gdi.getTecnicos();
-
-            if (disponibles.isEmpty()) {
+            List<Tecnico> tecnicos = gdi.getTecnicos();
+            
+             if (tecnicos.isEmpty()) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("No hay técnicos disponibles")
                         .build();
             }
+            
+            Random random = new Random();
+            int indiceAleatorio = random.nextInt(tecnicos.size()); 
+            Tecnico tecnico = tecnicos.get(indiceAleatorio);
 
-            boolean result = gdi.asigTecnico(disponibles, i, asig);
+            boolean result = gdi.asigTecnico(tecnico, i, asig);
 
             if (result) {
-                return Response.ok("Técnico asignado correctamente.").build();
+                return Response.ok(tecnico.getUsuario()).build();
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Error al asignar el técnico")

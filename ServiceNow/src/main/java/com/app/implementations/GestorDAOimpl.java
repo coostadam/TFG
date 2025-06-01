@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import org.hibernate.Session;
 
 import java.util.List;
-import java.util.Random;
 import org.hibernate.Transaction;
 
 public class GestorDAOimpl implements GestorDAO, AutoCloseable {
@@ -38,14 +37,10 @@ public class GestorDAOimpl implements GestorDAO, AutoCloseable {
     }
 
     @Override
-    public boolean asigTecnico(List<Tecnico> tecnicos, Incidencia i, Gestor gest) {      
+    public boolean asigTecnico(Tecnico tecnico, Incidencia i, Gestor gest) {      
         Transaction transaction = null;
 
-        try {
-            Random random = new Random();
-            int indiceAleatorio = random.nextInt(tecnicos.size()); 
-            Tecnico tecnico = tecnicos.get(indiceAleatorio);
-            
+        try {            
             transaction = session.beginTransaction();
 
             Query query = session.createQuery(

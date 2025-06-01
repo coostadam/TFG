@@ -67,8 +67,8 @@ export function GestorDashboard() {
       }
 
       const data = await response.text();
-      console.log("Técnico asignado:", data);
-
+      alert("Técnico asignado: " + data);
+      
       setIncidencias(prevIncidencias =>
         prevIncidencias.filter(inc => inc.id !== incidenciaData.id)
       );
